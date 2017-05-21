@@ -2,12 +2,6 @@ package io.openmessaging.demo;
 
 import io.openmessaging.*;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Map;
-
 public class DefaultProducer  implements Producer {
     private MessageFactory messageFactory = new DefaultMessageFactory();
     private MessageStore messageStore;
@@ -73,20 +67,6 @@ public class DefaultProducer  implements Producer {
     }
 
     @Override public void flush() {
-//        String storePath = properties.getString("STORE_PATH");
-//        String actualStorePath = storePath + "/" + this.toString();
-//        Map<String, ArrayList<Message>> messageBuckets = messageStore.getMessageBuckets();
-//        try {
-//            PrintWriter pw = new PrintWriter(new FileWriter(actualStorePath), true);
-//            for (String bucket: messageBuckets.keySet()) {
-//                ArrayList<Message> bucketList = messageBuckets.get(bucket);
-//                for (Message message : bucketList) {
-//                    pw.println(message.toString());
-//                }
-//            }
-//            pw.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        messageStore.flush();
     }
 }

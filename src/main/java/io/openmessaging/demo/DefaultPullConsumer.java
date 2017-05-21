@@ -22,7 +22,7 @@ public class DefaultPullConsumer implements PullConsumer {
         MessageDrawer messageDrawer = MessageDrawer.getInstance();
         LinkedList<Message> messages = messageDrawer.loadFromDisk(properties.getString("STORE_PATH"));
         for (Message message : messages) {
-            messageStore.putMessage(message);
+            messageStore.transferMessage(message);
         }
     }
 
