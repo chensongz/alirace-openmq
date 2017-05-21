@@ -72,20 +72,20 @@ public class DefaultProducer  implements Producer {
     }
 
     @Override public void flush() {
-        String storePath = properties.getString("STORE_PATH");
-        String actualStorePath = storePath + "/" + this.toString();
-        Map<String, ArrayList<Message>> messageBuckets = messageStore.getMessageBuckets();
-        try {
-            PrintWriter pw = new PrintWriter(new FileWriter(actualStorePath), true);
-            for (String bucket: messageBuckets.keySet()) {
-                ArrayList<Message> bucketList = messageBuckets.get(bucket);
-                for (Message message : bucketList) {
-                    pw.println(message.toString());
-                }
-            }
-            pw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        String storePath = properties.getString("STORE_PATH");
+//        String actualStorePath = storePath + "/" + this.toString();
+//        Map<String, ArrayList<Message>> messageBuckets = messageStore.getMessageBuckets();
+//        try {
+//            PrintWriter pw = new PrintWriter(new FileWriter(actualStorePath), true);
+//            for (String bucket: messageBuckets.keySet()) {
+//                ArrayList<Message> bucketList = messageBuckets.get(bucket);
+//                for (Message message : bucketList) {
+//                    pw.println(message.toString());
+//                }
+//            }
+//            pw.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }
