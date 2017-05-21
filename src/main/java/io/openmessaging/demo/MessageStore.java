@@ -26,7 +26,7 @@ public class MessageStore {
             messageBuckets.put(bucket, new LinkedList<>());
         }
 //        // TODO speed too slow
-//        LinkedList<Message> bucketList = messageBuckets.get(bucket);
+        LinkedList<Message> bucketList = messageBuckets.get(bucket);
 //        bucketList.add(message);
     }
 
