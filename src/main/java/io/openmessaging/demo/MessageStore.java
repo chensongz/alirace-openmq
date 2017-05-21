@@ -12,7 +12,7 @@ public class MessageStore {
     private Map<String, ArrayList<Message>> messageBuckets = new HashMap<>();
     private Map<String, HashMap<String, Integer>> queueOffsets = new HashMap<>();
 
-    public synchronized void putMessage(Message message) {
+    public void putMessage(Message message) {
         if (message == null) throw new ClientOMSException("Message should not be null");
         String topic = message.headers().getString(MessageHeader.TOPIC);
         String queue = message.headers().getString(MessageHeader.QUEUE);
@@ -30,16 +30,12 @@ public class MessageStore {
     }
 
 
-    public synchronized Message pullMessage(String queue, String bucket) {
+    public Message pullMessage(String queue, String bucket) {
         ArrayList<Message> bucketList = messageBuckets.get(bucket);
         if (bucketList == null) {
             return null;
         }
-        HashMap<String, Integer> offsetMap = queueOffsets.get(queue);
-        if (offsetMap == null) {
-            offsetMap = new HashMap<>();
-            queueOffsets.put(queue, offsetMap);
-        }
+        HashMap<String, Integer> offsetMap = queueOffsets.computeIfAbsent(queue, k -> new HashMap<>());
         int offset = offsetMap.getOrDefault(bucket, 0);
         if (offset >= bucketList.size()) {
             return null;
