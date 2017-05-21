@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 public class DefaultPullConsumer implements PullConsumer {
-    private MessageStore messageStore = MessageStore.getInstance();
+    private MessageStore messageStore = new MessageStore();
     private KeyValue properties;
     private String queue;
     private Set<String> buckets = new HashSet<>();
@@ -20,8 +20,12 @@ public class DefaultPullConsumer implements PullConsumer {
 
     public DefaultPullConsumer(KeyValue properties) {
         this.properties = properties;
+        MessageDrawer messageDrawer = MessageDrawer.getInstance();
+        ArrayList<Message> messages = messageDrawer.loadFromDisk(properties.getString("STORE_PATH"));
+        for (Message message : messages) {
+            messageStore.putMessage(message);
+        }
     }
-
 
     @Override public KeyValue properties() {
         return properties;
@@ -55,9 +59,16 @@ public class DefaultPullConsumer implements PullConsumer {
     }
 
     @Override public synchronized void attachQueue(String queueName, Collection<String> topics) {
+        // one thread can only attach one queue while can attach all topics.
+        // according to the rule, different consumer won't attach to the same queue
         if (queue != null && !queue.equals(queueName)) {
             throw new ClientOMSException("You have alreadly attached to a queue " + queue);
         }
+        String str = "";
+        for (String topic:topics) {
+            str += topic + ",";
+        }
+        System.out.println(this.toString() + " attachQueue: " + queueName + "topics: [" + str + "]");
         queue = queueName;
         buckets.add(queueName);
         buckets.addAll(topics);

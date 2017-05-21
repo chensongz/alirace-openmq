@@ -3,6 +3,7 @@ package io.openmessaging.demo;
 import io.openmessaging.BytesMessage;
 import io.openmessaging.KeyValue;
 import io.openmessaging.Message;
+import io.openmessaging.MessageHeader;
 
 public class DefaultBytesMessage implements BytesMessage {
 
@@ -72,5 +73,23 @@ public class DefaultBytesMessage implements BytesMessage {
         if (properties == null) properties = new DefaultKeyValue();
         properties.put(key, value);
         return this;
+    }
+
+    @Override public String toString() {
+        String result = "";
+        if (properties != null) {
+            for (String key : properties.keySet()) {
+                result += key + ":" + properties.getString(key) + "\t";
+            }
+        }
+        result += "|";
+        if (headers != null) {
+            for (String key : headers.keySet()) {
+                result += key + ":" + headers.getString(key) + "\t";
+            }
+        }
+        result += "|";
+        result += "body:" + new String(body);
+        return result;
     }
 }
