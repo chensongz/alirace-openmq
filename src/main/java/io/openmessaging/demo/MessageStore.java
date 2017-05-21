@@ -13,20 +13,20 @@ public class MessageStore {
     private Map<String, HashMap<String, Integer>> queueOffsets = new HashMap<>();
 
     public void putMessage(Message message) {
-        if (message == null) throw new ClientOMSException("Message should not be null");
-        String topic = message.headers().getString(MessageHeader.TOPIC);
-        String queue = message.headers().getString(MessageHeader.QUEUE);
-        if ((topic == null && queue == null) || (topic != null && queue != null)) {
-            throw new ClientOMSException(String.format("Queue:%s Topic:%s should put one and only one", true, queue));
-        }
-        String bucket = topic != null ? topic : queue;
-        // if messageBuckets don't contain specific topic or queue,
-        // then add topic or queue to messageBuckets.
-        if (!messageBuckets.containsKey(bucket)) {
-            messageBuckets.put(bucket, new LinkedList<>());
-        }
-        LinkedList<Message> bucketList = messageBuckets.get(bucket);
-        bucketList.add(message);
+//        if (message == null) throw new ClientOMSException("Message should not be null");
+//        String topic = message.headers().getString(MessageHeader.TOPIC);
+//        String queue = message.headers().getString(MessageHeader.QUEUE);
+//        if ((topic == null && queue == null) || (topic != null && queue != null)) {
+//            throw new ClientOMSException(String.format("Queue:%s Topic:%s should put one and only one", true, queue));
+//        }
+//        String bucket = topic != null ? topic : queue;
+//        // if messageBuckets don't contain specific topic or queue,
+//        // then add topic or queue to messageBuckets.
+//        if (!messageBuckets.containsKey(bucket)) {
+//            messageBuckets.put(bucket, new LinkedList<>());
+//        }
+//        LinkedList<Message> bucketList = messageBuckets.get(bucket);
+//        bucketList.add(message);
     }
 
 
