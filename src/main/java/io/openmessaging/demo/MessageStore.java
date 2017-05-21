@@ -27,7 +27,7 @@ public class MessageStore {
         }
 //        // TODO speed too slow
         LinkedList<Message> bucketList = messageBuckets.get(bucket);
-//        bucketList.add(message);
+        bucketList.add(message);
     }
 
 
