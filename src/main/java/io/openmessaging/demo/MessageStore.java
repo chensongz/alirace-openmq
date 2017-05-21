@@ -22,9 +22,9 @@ public class MessageStore {
         String bucket = topic != null ? topic : queue;
         // if messageBuckets don't contain specific topic or queue,
         // then add topic or queue to messageBuckets.
-//        if (!messageBuckets.containsKey(bucket)) {
-//            messageBuckets.put(bucket, new LinkedList<>());
-//        }
+        if (!messageBuckets.containsKey(bucket)) {
+            messageBuckets.put(bucket, new LinkedList<>());
+        }
 //        // TODO speed too slow
 //        LinkedList<Message> bucketList = messageBuckets.get(bucket);
 //        bucketList.add(message);
