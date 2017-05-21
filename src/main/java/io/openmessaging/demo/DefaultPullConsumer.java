@@ -4,10 +4,11 @@ import io.openmessaging.KeyValue;
 import io.openmessaging.Message;
 import io.openmessaging.PullConsumer;
 
+import java.io.IOException;
 import java.util.*;
 
 public class DefaultPullConsumer implements PullConsumer {
-    private MessageStore messageStore = new MessageStore();
+    private MessageStore messageStore;
     private KeyValue properties;
     private String queue;
     private Set<String> buckets = new HashSet<>();
@@ -15,8 +16,9 @@ public class DefaultPullConsumer implements PullConsumer {
 
     private int lastIndex = 0;
 
-    public DefaultPullConsumer(KeyValue properties) {
+    public DefaultPullConsumer(KeyValue properties) throws IOException {
         this.properties = properties;
+        messageStore = new MessageStore(properties);
         MessageDrawer messageDrawer = MessageDrawer.getInstance();
         LinkedList<Message> messages = messageDrawer.loadFromDisk(properties.getString("STORE_PATH"));
         for (Message message : messages) {

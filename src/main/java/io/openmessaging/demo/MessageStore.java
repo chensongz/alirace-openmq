@@ -1,8 +1,11 @@
 package io.openmessaging.demo;
 
+import io.openmessaging.KeyValue;
 import io.openmessaging.Message;
 import io.openmessaging.MessageHeader;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,9 +16,12 @@ public class MessageStore {
     private Map<String, LinkedList<Message>> messageBuckets = new HashMap<>();
     private Map<String, HashMap<String, Integer>> queueOffsets = new HashMap<>();
     private PrintWriter printWriter;
-    public MessageStore(PrintWriter printWriter) {
-        this.printWriter = printWriter;
+    public MessageStore(KeyValue properties) throws IOException {
+        String storePath = properties.getString("STORE_PATH");
+        String actualStorePath = storePath + "/" + this.toString();
+        printWriter = new PrintWriter(new FileWriter(actualStorePath));
     }
+
     public void putMessage(Message message) {
         if (message == null) throw new ClientOMSException("Message should not be null");
         String topic = message.headers().getString(MessageHeader.TOPIC);
