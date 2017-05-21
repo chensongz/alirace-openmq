@@ -65,7 +65,7 @@ public class DefaultPullConsumer implements PullConsumer {
         for (String topic:topics) {
             str += topic + ",";
         }
-        System.out.println(this.toString() + " attachQueue: " + queueName + "topics: [" + str + "]");
+        System.out.println(this.toString() + " attachQueue: " + queueName + " topics: [" + str + "]");
         queue = queueName;
         buckets.add(queueName);
         buckets.addAll(topics);
