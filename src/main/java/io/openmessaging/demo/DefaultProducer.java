@@ -14,7 +14,7 @@ public class DefaultProducer  implements Producer {
 
     private KeyValue properties;
 
-    public DefaultProducer(KeyValue properties) throws IOException {
+    public DefaultProducer(KeyValue properties) {
         this.properties = properties;
         messageStore = new MessageStore(properties);
     }

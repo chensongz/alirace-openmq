@@ -16,7 +16,7 @@ public class DefaultPullConsumer implements PullConsumer {
 
     private int lastIndex = 0;
 
-    public DefaultPullConsumer(KeyValue properties) throws IOException {
+    public DefaultPullConsumer(KeyValue properties) {
         this.properties = properties;
         messageStore = new MessageStore(properties);
         MessageDrawer messageDrawer = MessageDrawer.getInstance();

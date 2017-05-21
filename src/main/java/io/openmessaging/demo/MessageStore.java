@@ -15,11 +15,15 @@ public class MessageStore {
 
     private Map<String, LinkedList<Message>> messageBuckets = new HashMap<>();
     private Map<String, HashMap<String, Integer>> queueOffsets = new HashMap<>();
-    private PrintWriter printWriter;
-    public MessageStore(KeyValue properties) throws IOException {
+    private PrintWriter printWriter = null;
+    public MessageStore(KeyValue properties)  {
         String storePath = properties.getString("STORE_PATH");
         String actualStorePath = storePath + "/" + this.toString();
-        printWriter = new PrintWriter(new FileWriter(actualStorePath));
+        try {
+            printWriter = new PrintWriter(new FileWriter(actualStorePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void putMessage(Message message) {
@@ -39,7 +43,9 @@ public class MessageStore {
 //        System.out.println(bucket + ":" + (i++));
 //        LinkedList<Message> bucketList = messageBuckets.get(bucket);
 //        bucketList.add(message);
-        printWriter.println(message.toString());
+        if (printWriter != null) {
+            printWriter.println(message.toString());
+        }
     }
 
 
