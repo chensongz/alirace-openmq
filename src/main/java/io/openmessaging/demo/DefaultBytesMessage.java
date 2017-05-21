@@ -3,7 +3,6 @@ package io.openmessaging.demo;
 import io.openmessaging.BytesMessage;
 import io.openmessaging.KeyValue;
 import io.openmessaging.Message;
-import io.openmessaging.MessageHeader;
 
 public class DefaultBytesMessage implements BytesMessage {
 

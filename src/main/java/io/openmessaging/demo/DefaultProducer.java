@@ -1,12 +1,6 @@
 package io.openmessaging.demo;
 
-import io.openmessaging.BatchToPartition;
-import io.openmessaging.BytesMessage;
-import io.openmessaging.KeyValue;
-import io.openmessaging.Message;
-import io.openmessaging.MessageFactory;
-import io.openmessaging.Producer;
-import io.openmessaging.Promise;
+import io.openmessaging.*;
 
 import java.io.FileWriter;
 import java.io.IOException;
