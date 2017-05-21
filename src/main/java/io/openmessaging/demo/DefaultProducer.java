@@ -10,12 +10,16 @@ import java.util.Map;
 
 public class DefaultProducer  implements Producer {
     private MessageFactory messageFactory = new DefaultMessageFactory();
-    private MessageStore messageStore = new MessageStore();
+    private MessageStore messageStore;
 
     private KeyValue properties;
 
-    public DefaultProducer(KeyValue properties) {
+    public DefaultProducer(KeyValue properties) throws IOException {
         this.properties = properties;
+        String storePath = properties.getString("STORE_PATH");
+        String actualStorePath = storePath + "/" + this.toString();
+        PrintWriter pw = new PrintWriter(new FileWriter(actualStorePath));
+        messageStore = new MessageStore(pw);
     }
 
 

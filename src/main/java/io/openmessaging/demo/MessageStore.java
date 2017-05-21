@@ -3,6 +3,7 @@ package io.openmessaging.demo;
 import io.openmessaging.Message;
 import io.openmessaging.MessageHeader;
 
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -11,8 +12,10 @@ public class MessageStore {
 
     private Map<String, LinkedList<Message>> messageBuckets = new HashMap<>();
     private Map<String, HashMap<String, Integer>> queueOffsets = new HashMap<>();
-
-    private int i = 0;
+    private PrintWriter printWriter;
+    public MessageStore(PrintWriter printWriter) {
+        this.printWriter = printWriter;
+    }
     public void putMessage(Message message) {
         if (message == null) throw new ClientOMSException("Message should not be null");
         String topic = message.headers().getString(MessageHeader.TOPIC);
@@ -20,16 +23,17 @@ public class MessageStore {
         if ((topic == null && queue == null) || (topic != null && queue != null)) {
             throw new ClientOMSException(String.format("Queue:%s Topic:%s should put one and only one", true, queue));
         }
-        String bucket = topic != null ? topic : queue;
+//        String bucket = topic != null ? topic : queue;
         // if messageBuckets don't contain specific topic or queue,
         // then add topic or queue to messageBuckets.
-        if (!messageBuckets.containsKey(bucket)) {
-            messageBuckets.put(bucket, new LinkedList<>());
-        }
+//        if (!messageBuckets.containsKey(bucket)) {
+//            messageBuckets.put(bucket, new LinkedList<>());
+//        }
         // TODO speed too slow
-        System.out.println(bucket + ":" + (i++));
-        LinkedList<Message> bucketList = messageBuckets.get(bucket);
-        bucketList.add(message);
+//        System.out.println(bucket + ":" + (i++));
+//        LinkedList<Message> bucketList = messageBuckets.get(bucket);
+//        bucketList.add(message);
+        printWriter.println(message.toString());
     }
 
 
