@@ -11,14 +11,14 @@ public class DefaultPullConsumer implements PullConsumer {
     private KeyValue properties;
     private String queue;
     private Set<String> buckets = new HashSet<>();
-    private List<String> bucketList = new ArrayList<>();
+    private List<String> bucketList = new LinkedList<>();
 
     private int lastIndex = 0;
 
     public DefaultPullConsumer(KeyValue properties) {
         this.properties = properties;
         MessageDrawer messageDrawer = MessageDrawer.getInstance();
-        ArrayList<Message> messages = messageDrawer.loadFromDisk(properties.getString("STORE_PATH"));
+        LinkedList<Message> messages = messageDrawer.loadFromDisk(properties.getString("STORE_PATH"));
         for (Message message : messages) {
             messageStore.putMessage(message);
         }

@@ -3,13 +3,13 @@ package io.openmessaging.demo;
 import io.openmessaging.Message;
 import io.openmessaging.MessageHeader;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class MessageStore {
 
-    private Map<String, ArrayList<Message>> messageBuckets = new HashMap<>();
+    private Map<String, LinkedList<Message>> messageBuckets = new HashMap<>();
     private Map<String, HashMap<String, Integer>> queueOffsets = new HashMap<>();
 
     public void putMessage(Message message) {
@@ -23,15 +23,15 @@ public class MessageStore {
         // if messageBuckets don't contain specific topic or queue,
         // then add topic or queue to messageBuckets.
         if (!messageBuckets.containsKey(bucket)) {
-            messageBuckets.put(bucket, new ArrayList<>(1024));
+            messageBuckets.put(bucket, new LinkedList<>());
         }
-        ArrayList<Message> bucketList = messageBuckets.get(bucket);
+        LinkedList<Message> bucketList = messageBuckets.get(bucket);
         bucketList.add(message);
     }
 
 
     public Message pullMessage(String queue, String bucket) {
-        ArrayList<Message> bucketList = messageBuckets.get(bucket);
+        LinkedList<Message> bucketList = messageBuckets.get(bucket);
         if (bucketList == null) {
             return null;
         }
@@ -46,7 +46,7 @@ public class MessageStore {
     }
 
 
-    public Map<String, ArrayList<Message>> getMessageBuckets() {
+    public Map<String, LinkedList<Message>> getMessageBuckets() {
         return this.messageBuckets;
     }
 }

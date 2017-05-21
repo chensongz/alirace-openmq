@@ -5,7 +5,7 @@ import io.openmessaging.Message;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 
 public class MessageDrawer {
@@ -16,9 +16,9 @@ public class MessageDrawer {
         return INSTANCE;
     }
 
-    private ArrayList<Message> messages = new ArrayList<>();
+    private LinkedList<Message> messages = new LinkedList<>();
 
-    public synchronized ArrayList<Message> loadFromDisk(String storePath) {
+    public synchronized LinkedList<Message> loadFromDisk(String storePath) {
         if (messages.isEmpty()) {
             try {
                 File dir = new File(storePath);
