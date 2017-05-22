@@ -31,7 +31,7 @@ public class MessageDrawer {
                     if (files != null) {
                         for (File file : files) {
                             System.out.println("file path:" + file.getAbsolutePath() + " " + file.length());
-                            if (file.length() > 0) {
+                            if (file.length() > 0 && file.getName().contains("io.openmessaging.demo.MessageStore@")) {
                                 BufferedReader reader = new BufferedReader(new FileReader(file));
                                 String row;
                                 while ((row = reader.readLine()) != null) {
