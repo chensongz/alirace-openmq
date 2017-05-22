@@ -19,7 +19,7 @@ public class MessageStore {
 
     private Map<String, PrintWriter> printWriterBuckets = new HashMap<>();
 
-    public synchronized void putMessage(String storePath, String bucket, Message message) {
+    public synchronized PrintWriter putBucketFile(String storePath, String bucket) {
         if (!printWriterBuckets.containsKey(bucket)) {
             String fileName = storePath + "/" + bucket;
             try {
@@ -28,7 +28,6 @@ public class MessageStore {
                 e.printStackTrace();
             }
         }
-        PrintWriter printWriter = printWriterBuckets.get(bucket);
-        printWriter.println(message.toString());
+        return printWriterBuckets.get(bucket);
     }
 }

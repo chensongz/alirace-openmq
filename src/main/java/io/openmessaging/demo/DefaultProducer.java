@@ -9,6 +9,8 @@ import io.openmessaging.MessageHeader;
 import io.openmessaging.Producer;
 import io.openmessaging.Promise;
 
+import java.io.PrintWriter;
+
 public class DefaultProducer  implements Producer {
     private MessageFactory messageFactory = new DefaultMessageFactory();
     private MessageStore messageStore = MessageStore.getInstance();
@@ -50,7 +52,8 @@ public class DefaultProducer  implements Producer {
             throw new ClientOMSException(String.format("Queue:%s Topic:%s should put one and only one", true, queue));
         }
 
-        messageStore.putMessage(storePath, topic != null ? topic : queue, message);
+        PrintWriter pw = messageStore.putBucketFile(storePath, topic != null ? topic : queue);
+        pw.println(message.toString());
     }
 
     @Override public void send(Message message, KeyValue properties) {
