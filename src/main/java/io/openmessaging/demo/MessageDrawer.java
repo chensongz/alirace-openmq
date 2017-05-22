@@ -28,12 +28,14 @@ public class MessageDrawer {
                     File[] files = dir.listFiles();
                     if (files != null) {
                         for (File file : files) {
-                            BufferedReader reader = new BufferedReader(new FileReader(file));
-                            String row;
-                            while ((row = reader.readLine()) != null) {
-                                Message message = parseMessage(row);
-                                messages.add(message);
-                            }
+                            System.out.println("file path:" + file.getAbsolutePath() + " " + file.getName());
+//                            BufferedReader reader = new BufferedReader(new FileReader(file));
+//                            String row;
+//                            while ((row = reader.readLine()) != null) {
+//                                Message message = parseMessage(row);
+//                                messages.add(message);
+//                            }
+                            messages.add(parseMessage("|Queue:QUEUE2\t|body:QUEUE21023"));
                         }
 
                     }
