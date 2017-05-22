@@ -28,7 +28,7 @@ public class MessageDrawer {
                     File[] files = dir.listFiles();
                     if (files != null) {
                         for (File file : files) {
-                            System.out.println("file path:" + file.getAbsolutePath() + " " + file.getName());
+                            System.out.println("file path:" + file.getAbsolutePath() + " " + file.length());
 //                            BufferedReader reader = new BufferedReader(new FileReader(file));
 //                            String row;
 //                            while ((row = reader.readLine()) != null) {
