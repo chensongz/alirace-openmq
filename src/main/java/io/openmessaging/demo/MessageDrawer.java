@@ -28,30 +28,31 @@ public class MessageDrawer {
                     System.out.println(storePath + " not exists");
                 } else {
                     File[] files = dir.listFiles();
-//                    if (files != null) {
-//                        for (File file : files) {
-//                            System.out.println("file path:" + file.getAbsolutePath() + " " + file.length());
-//                            BufferedReader reader = new BufferedReader(new FileReader(file));
-//                            String row;
-//                            while ((row = reader.readLine()) != null) {
-//                                Message message = parseMessage(row);
-//                                messages.add(message);
-//                            }
-//                            reader.close();
-////                            messages.add(parseMessage("|Queue:QUEUE2\t|body:QUEUE21023"));
-//                        }
-//
-//                    }
                     if (files != null) {
-                        File file = files[0];
-                        System.out.println("file path:" + file.getAbsolutePath() + " " + file.length());
-                        BufferedReader reader = new BufferedReader(new FileReader(file));
-                        String row;
-                        while ((row = reader.readLine()) != null) {
-                            messages.add(parseMessage(row));
+                        for (File file : files) {
+                            System.out.println("file path:" + file.getAbsolutePath() + " " + file.length());
+                            if (file.length() > 0) {
+                                BufferedReader reader = new BufferedReader(new FileReader(file));
+                                String row;
+                                while ((row = reader.readLine()) != null) {
+                                    messages.add(parseMessage(row));
+                                }
+                                reader.close();
+                            }
+//                            messages.add(parseMessage("|Queue:QUEUE2\t|body:QUEUE21023"));
                         }
-                        reader.close();
+
                     }
+//                    if (files != null) {
+//                        File file = files[0];
+//                        System.out.println("file path:" + file.getAbsolutePath() + " " + file.length());
+//                        BufferedReader reader = new BufferedReader(new FileReader(file));
+//                        String row;
+//                        while ((row = reader.readLine()) != null) {
+//                            messages.add(parseMessage(row));
+//                        }
+//                        reader.close();
+//                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
