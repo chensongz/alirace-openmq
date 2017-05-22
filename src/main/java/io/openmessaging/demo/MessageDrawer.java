@@ -17,9 +17,11 @@ public class MessageDrawer {
     }
 
     private LinkedList<Message> messages = new LinkedList<>();
+    private int i = 0;
 
     public synchronized LinkedList<Message> loadFromDisk(String storePath) {
         if (messages.isEmpty()) {
+            System.out.println(i + "times to load from disk");
             try {
                 File dir = new File(storePath);
                 if (!dir.exists()) {
