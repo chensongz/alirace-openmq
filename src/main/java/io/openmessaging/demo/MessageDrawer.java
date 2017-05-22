@@ -48,8 +48,7 @@ public class MessageDrawer {
                         BufferedReader reader = new BufferedReader(new FileReader(file));
                         String row;
                         while ((row = reader.readLine()) != null) {
-                            Message message = parseMessage(row);
-                            messages.add(message);
+                            messages.add(parseMessage(row));
                         }
                         reader.close();
                     }
