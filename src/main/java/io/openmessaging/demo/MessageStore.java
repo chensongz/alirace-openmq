@@ -22,6 +22,7 @@ public class MessageStore {
         String actualStorePath = storePath + "/" + this.toString();
         try {
             printWriter = new PrintWriter(new FileWriter(actualStorePath));
+            System.out.println("pw:"+actualStorePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
