@@ -29,13 +29,14 @@ public class MessageDrawer {
                     if (files != null) {
                         for (File file : files) {
                             System.out.println("file path:" + file.getAbsolutePath() + " " + file.length());
-//                            BufferedReader reader = new BufferedReader(new FileReader(file));
-//                            String row;
-//                            while ((row = reader.readLine()) != null) {
-//                                Message message = parseMessage(row);
-//                                messages.add(message);
-//                            }
-                            messages.add(parseMessage("|Queue:QUEUE2\t|body:QUEUE21023"));
+                            BufferedReader reader = new BufferedReader(new FileReader(file));
+                            String row;
+                            while ((row = reader.readLine()) != null) {
+                                Message message = parseMessage(row);
+                                messages.add(message);
+                            }
+                            reader.close();
+//                            messages.add(parseMessage("|Queue:QUEUE2\t|body:QUEUE21023"));
                         }
 
                     }
