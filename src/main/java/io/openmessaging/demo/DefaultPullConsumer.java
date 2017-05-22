@@ -3,46 +3,31 @@ package io.openmessaging.demo;
 import io.openmessaging.KeyValue;
 import io.openmessaging.Message;
 import io.openmessaging.PullConsumer;
-
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class DefaultPullConsumer implements PullConsumer {
-    private MessageStore messageStore;
+    private MessageDrawer messageDrawer;
     private KeyValue properties;
     private String queue;
-    private Set<String> buckets = new HashSet<>();
-    private List<String> bucketList = new LinkedList<>();
-
-    private int lastIndex = 0;
 
     public DefaultPullConsumer(KeyValue properties) {
         this.properties = properties;
-        messageStore = new MessageStore(properties);
-        MessageDrawer messageDrawer = MessageDrawer.getInstance();
-        LinkedList<Message> messages = messageDrawer.loadFromDisk(properties.getString("STORE_PATH"));
-        for (Message message : messages) {
-            messageStore.transferMessage(message);
-        }
+        String storePath = properties.getString("STORE_PATH");
+        messageDrawer = new MessageDrawer(storePath);
     }
+
 
     @Override public KeyValue properties() {
         return properties;
     }
 
 
-    @Override public synchronized Message poll() {
-        if (buckets.size() == 0 || queue == null) {
-            return null;
-        }
-
-        for (int i = 0; i < bucketList.size(); i++) {
-            Message message = messageStore.pullMessage(queue, bucketList.get(i));
-            if (message != null) {
-                return message;
-            }
-        }
-        return null;
+    @Override public Message poll() {
+        return messageDrawer.pullMessage();
     }
 
     @Override public Message poll(KeyValue properties) {
@@ -57,22 +42,17 @@ public class DefaultPullConsumer implements PullConsumer {
         throw new UnsupportedOperationException("Unsupported");
     }
 
-    @Override public synchronized void attachQueue(String queueName, Collection<String> topics) {
-        // one thread can only attach one queue while can attach all topics.
-        // according to the rule, different consumer won't attach to the same queue
+    @Override public void attachQueue(String queueName, Collection<String> topics) {
         if (queue != null && !queue.equals(queueName)) {
             throw new ClientOMSException("You have alreadly attached to a queue " + queue);
         }
+        queue = queueName;
         String str = "";
         for (String topic:topics) {
             str += topic + ",";
         }
         System.out.println(this.toString() + " attachQueue: " + queueName + " topics: [" + str + "]");
-        queue = queueName;
-        buckets.add(queueName);
-        buckets.addAll(topics);
-        bucketList.clear();
-        bucketList.addAll(buckets);
+        messageDrawer.attachQueue(queueName, topics);
     }
 
 

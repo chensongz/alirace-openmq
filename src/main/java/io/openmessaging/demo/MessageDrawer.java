@@ -5,60 +5,51 @@ import io.openmessaging.Message;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.Collection;
 import java.util.LinkedList;
 
-
+/**
+ * Created by bgk on 5/22/17.
+ */
 public class MessageDrawer {
+    private LinkedList<Message> messageQueue = new LinkedList<>();
+    private LinkedList<String> nonConsumeFiles = new LinkedList<>();
+    private String storePath;
 
-    private static final MessageDrawer INSTANCE = new MessageDrawer();
-
-    public static MessageDrawer getInstance() {
-        return INSTANCE;
+    public MessageDrawer(String storePath) {
+        this.storePath = storePath;
     }
 
-    private LinkedList<Message> messages = new LinkedList<>();
-    private int i = 0;
+    private void readFile(String fileName) {
+        File file = new File(fileName);
+        System.out.println("file name: " + file.getAbsolutePath() + " file size: " + file.length());
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String row;
+            while ((row = reader.readLine()) != null) {
+                messageQueue.add(parseMessage(row));
+            }
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-    public synchronized LinkedList<Message> loadFromDisk(String storePath) {
-        if (messages.isEmpty()) {
-            System.out.println(i + "times to load from disk");
-            try {
-                File dir = new File(storePath);
-                if (!dir.exists()) {
-                    System.out.println(storePath + " not exists");
-                } else {
-                    File[] files = dir.listFiles();
-                    if (files != null) {
-                        for (File file : files) {
-                            System.out.println("file path:" + file.getAbsolutePath() + " " + file.length());
-                            if (file.length() > 0 && file.getName().contains("io.openmessaging.demo.MessageStore@")) {
-                                BufferedReader reader = new BufferedReader(new FileReader(file));
-                                String row;
-                                while ((row = reader.readLine()) != null) {
-                                    messages.add(parseMessage(row));
-                                }
-                                reader.close();
-                            }
-//                            messages.add(parseMessage("|Queue:QUEUE2\t|body:QUEUE21023"));
-                        }
+    public void attachQueue(String queueName, Collection<String> topics) {
+        readFile(storePath + "/" + queueName);
+        nonConsumeFiles.addAll(topics);
+    }
 
-                    }
-//                    if (files != null) {
-//                        File file = files[0];
-//                        System.out.println("file path:" + file.getAbsolutePath() + " " + file.length());
-//                        BufferedReader reader = new BufferedReader(new FileReader(file));
-//                        String row;
-//                        while ((row = reader.readLine()) != null) {
-//                            messages.add(parseMessage(row));
-//                        }
-//                        reader.close();
-//                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+    public Message pullMessage() {
+        Message message = messageQueue.poll();
+        if (message == null) {
+            String nonConsumeFileName = nonConsumeFiles.poll();
+            if (nonConsumeFileName != null) {
+                readFile(storePath + "/" + nonConsumeFileName);
+                message = messageQueue.poll();
             }
         }
-        return messages;
+        return message;
     }
 
     public Message parseMessage(String row) {

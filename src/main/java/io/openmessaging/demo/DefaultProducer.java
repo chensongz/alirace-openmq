@@ -1,16 +1,24 @@
 package io.openmessaging.demo;
 
-import io.openmessaging.*;
+import io.openmessaging.BatchToPartition;
+import io.openmessaging.BytesMessage;
+import io.openmessaging.KeyValue;
+import io.openmessaging.Message;
+import io.openmessaging.MessageFactory;
+import io.openmessaging.MessageHeader;
+import io.openmessaging.Producer;
+import io.openmessaging.Promise;
 
 public class DefaultProducer  implements Producer {
     private MessageFactory messageFactory = new DefaultMessageFactory();
-    private MessageStore messageStore;
+    private MessageStore messageStore = MessageStore.getInstance();
 
     private KeyValue properties;
 
+    private String storePath;
     public DefaultProducer(KeyValue properties) {
         this.properties = properties;
-        messageStore = new MessageStore(properties);
+        storePath = properties.getString("STORE_PATH");
     }
 
 
@@ -35,7 +43,14 @@ public class DefaultProducer  implements Producer {
     }
 
     @Override public void send(Message message) {
-        messageStore.putMessage(message);
+        if (message == null) throw new ClientOMSException("Message should not be null");
+        String topic = message.headers().getString(MessageHeader.TOPIC);
+        String queue = message.headers().getString(MessageHeader.QUEUE);
+        if ((topic == null && queue == null) || (topic != null && queue != null)) {
+            throw new ClientOMSException(String.format("Queue:%s Topic:%s should put one and only one", true, queue));
+        }
+
+        messageStore.putMessage(storePath, topic != null ? topic : queue, message);
     }
 
     @Override public void send(Message message, KeyValue properties) {
@@ -67,6 +82,6 @@ public class DefaultProducer  implements Producer {
     }
 
     @Override public void flush() {
-        messageStore.flush();
+
     }
 }
