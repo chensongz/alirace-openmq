@@ -63,16 +63,13 @@ public class MessageDrawer {
                         break;
                     }
                 }
-                if (num == 0) {
+                if (num < readCount) {
                     currentReader.close();
                     String nonConsumeFileName = nonConsumeFiles.poll();
                     if (nonConsumeFileName != null) {
                         readFile(storePath + "/" + nonConsumeFileName);
                         message = messageQueue.poll();
                     }
-                } else if (num < readCount) {
-                    currentReader.close();
-                    message = messageQueue.poll();
                 } else {
                     message = messageQueue.poll();
                 }
