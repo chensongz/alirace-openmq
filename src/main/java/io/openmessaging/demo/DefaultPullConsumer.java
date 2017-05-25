@@ -7,14 +7,14 @@ import io.openmessaging.PullConsumer;
 import java.util.Collection;
 
 public class DefaultPullConsumer implements PullConsumer {
-    private MessageDrawer messageDrawer;
+    private MessageDrawer2 messageDrawer;
     private KeyValue properties;
     private String queue;
 
     public DefaultPullConsumer(KeyValue properties) {
         this.properties = properties;
         String storePath = properties.getString("STORE_PATH");
-        messageDrawer = new MessageDrawer(storePath);
+        messageDrawer = new MessageDrawer2(storePath);
     }
 
 
