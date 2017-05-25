@@ -19,7 +19,7 @@ public class MessageDrawer {
     private BufferedReader currentReader;
     // can modify to satisfy memory need.
     // if memory is big, readCount can be bigger, vice versa.
-    private int readCount = 10240;
+    private int readCount = 256;
 
     public MessageDrawer(String storePath) {
         this.storePath = storePath;
