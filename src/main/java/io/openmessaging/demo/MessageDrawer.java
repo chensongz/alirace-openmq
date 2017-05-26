@@ -19,7 +19,7 @@ public class MessageDrawer {
     private BufferedReader currentReader;
     // can modify to satisfy memory need.
     // if memory is big, readCount can be bigger, vice versa.
-    private int readCount = 100;
+    private int readCount = 1024;
 
     public MessageDrawer(String storePath) {
         this.storePath = storePath;
@@ -29,7 +29,7 @@ public class MessageDrawer {
         File file = new File(fileName);
         System.out.println("file name: " + file.getAbsolutePath() + " file size: " + file.length());
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(file), 8192);
+            BufferedReader reader = new BufferedReader(new FileReader(file), 65536);
             String row;
             int num = 0;
             while ((row = reader.readLine()) != null) {

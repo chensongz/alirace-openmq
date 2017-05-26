@@ -21,7 +21,7 @@ public class MessageStore {
     public PrintWriter putBucketFile(String storePath, String bucket) {
         String fileName = storePath + "/" + bucket;
         try {
-            printWriterBuckets.putIfAbsent(bucket, new PrintWriter(new BufferedWriter(new FileWriter(fileName), 819200)));
+            printWriterBuckets.putIfAbsent(bucket, new PrintWriter(new BufferedWriter(new FileWriter(fileName), 65536)));
         } catch (IOException e) {
             e.printStackTrace();
         }
