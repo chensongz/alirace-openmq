@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MessageStore {
 
@@ -15,9 +16,9 @@ public class MessageStore {
         return INSTANCE;
     }
 
-    private Map<String, PrintWriter> printWriterBuckets = new HashMap<>();
+    private Map<String, PrintWriter> printWriterBuckets = new ConcurrentHashMap<>(1024);
 
-    public synchronized PrintWriter putBucketFile(String storePath, String bucket) {
+    public PrintWriter putBucketFile(String storePath, String bucket) {
         if (!printWriterBuckets.containsKey(bucket)) {
             String fileName = storePath + "/" + bucket;
             try {
