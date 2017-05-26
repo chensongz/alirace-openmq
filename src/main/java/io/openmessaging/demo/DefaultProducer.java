@@ -50,13 +50,7 @@ public class DefaultProducer  implements Producer {
         }
 
         String bucket = topic != null ? topic : queue;
-        PrintWriter pw;
-        if (!printWriterHashMap.containsKey(bucket)) {
-            pw = messageStore.putBucketFile(storePath, bucket);
-            printWriterHashMap.put(bucket, pw);
-        } else {
-            pw = printWriterHashMap.get(bucket);
-        }
+        PrintWriter pw = printWriterHashMap.putIfAbsent(bucket, messageStore.putBucketFile(storePath, bucket));
         pw.println(message.toString());
     }
 
