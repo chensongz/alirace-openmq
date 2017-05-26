@@ -21,7 +21,7 @@ public class MessageStore {
         if (!printWriterBuckets.containsKey(bucket)) {
             String fileName = storePath + "/" + bucket;
             try {
-                printWriterBuckets.put(bucket, new PrintWriter(new BufferedWriter(new FileWriter(fileName), 819200)));
+                printWriterBuckets.put(bucket, new PrintWriter(new BufferedWriter(new FileWriter(fileName), 1024000)));
             } catch (IOException e) {
                 e.printStackTrace();
             }
