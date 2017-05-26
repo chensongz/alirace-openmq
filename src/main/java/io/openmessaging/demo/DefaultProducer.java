@@ -10,6 +10,7 @@ import io.openmessaging.Producer;
 import io.openmessaging.Promise;
 
 import java.io.PrintWriter;
+import java.util.HashSet;
 
 public class DefaultProducer  implements Producer {
     private MessageFactory messageFactory = new DefaultMessageFactory();
@@ -18,6 +19,7 @@ public class DefaultProducer  implements Producer {
     private KeyValue properties;
 
     private String storePath;
+    private HashSet<PrintWriter> printWriterHashSet = new HashSet<>(1024);
     public DefaultProducer(KeyValue properties) {
         this.properties = properties;
         storePath = properties.getString("STORE_PATH");
@@ -54,6 +56,7 @@ public class DefaultProducer  implements Producer {
 
         PrintWriter pw = messageStore.putBucketFile(storePath, topic != null ? topic : queue);
         pw.println(message.toString());
+        printWriterHashSet.add(pw);
     }
 
     @Override public void send(Message message, KeyValue properties) {
@@ -85,6 +88,8 @@ public class DefaultProducer  implements Producer {
     }
 
     @Override public void flush() {
-
+        for (PrintWriter pw : printWriterHashSet) {
+            pw.flush();
+        }
     }
 }

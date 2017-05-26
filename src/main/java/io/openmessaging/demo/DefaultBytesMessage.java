@@ -75,20 +75,26 @@ public class DefaultBytesMessage implements BytesMessage {
     }
 
     @Override public String toString() {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         if (properties != null) {
             for (String key : properties.keySet()) {
-                result += key + ":" + properties.getString(key) + "\t";
+                result.append(key)
+                        .append(":")
+                        .append(properties.getString(key))
+                        .append("\t");
             }
         }
-        result += "|";
+        result.append("|");
         if (headers != null) {
             for (String key : headers.keySet()) {
-                result += key + ":" + headers.getString(key) + "\t";
+                result.append(key)
+                        .append(":")
+                        .append(headers.getString(key))
+                        .append("\t");
             }
         }
-        result += "|";
-        result += "body:" + new String(body);
-        return result;
+        result.append("|");
+        result.append("body:").append(new String(body));
+        return result.toString();
     }
 }

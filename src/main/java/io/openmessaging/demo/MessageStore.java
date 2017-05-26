@@ -1,5 +1,6 @@
 package io.openmessaging.demo;
 
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,7 +21,7 @@ public class MessageStore {
         if (!printWriterBuckets.containsKey(bucket)) {
             String fileName = storePath + "/" + bucket;
             try {
-                printWriterBuckets.put(bucket, new PrintWriter(new FileWriter(fileName), true));
+                printWriterBuckets.put(bucket, new PrintWriter(new BufferedWriter(new FileWriter(fileName), 819200)));
             } catch (IOException e) {
                 e.printStackTrace();
             }
