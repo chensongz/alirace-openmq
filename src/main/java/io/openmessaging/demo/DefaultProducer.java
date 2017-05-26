@@ -1,16 +1,10 @@
 package io.openmessaging.demo;
 
-import io.openmessaging.BatchToPartition;
-import io.openmessaging.BytesMessage;
-import io.openmessaging.KeyValue;
-import io.openmessaging.Message;
-import io.openmessaging.MessageFactory;
-import io.openmessaging.MessageHeader;
-import io.openmessaging.Producer;
-import io.openmessaging.Promise;
+import io.openmessaging.*;
 
 import java.io.PrintWriter;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DefaultProducer  implements Producer {
     private MessageFactory messageFactory = new DefaultMessageFactory();
@@ -19,7 +13,8 @@ public class DefaultProducer  implements Producer {
     private KeyValue properties;
 
     private String storePath;
-    private HashSet<PrintWriter> printWriterHashSet = new HashSet<>(1024);
+    private Map<String, PrintWriter> printWriterHashMap = new HashMap<>(1024);
+
     public DefaultProducer(KeyValue properties) {
         this.properties = properties;
         storePath = properties.getString("STORE_PATH");
@@ -54,9 +49,15 @@ public class DefaultProducer  implements Producer {
             throw new ClientOMSException(String.format("Queue:%s Topic:%s should put one and only one", true, queue));
         }
 
-        PrintWriter pw = messageStore.putBucketFile(storePath, topic != null ? topic : queue);
+        String bucket = topic != null ? topic : queue;
+        PrintWriter pw;
+        if (!printWriterHashMap.containsKey(bucket)) {
+            pw = messageStore.putBucketFile(storePath, bucket);
+            printWriterHashMap.put(bucket, pw);
+        } else {
+            pw = printWriterHashMap.get(bucket);
+        }
         pw.println(message.toString());
-        printWriterHashSet.add(pw);
     }
 
     @Override public void send(Message message, KeyValue properties) {
@@ -88,7 +89,7 @@ public class DefaultProducer  implements Producer {
     }
 
     @Override public void flush() {
-        for (PrintWriter pw : printWriterHashSet) {
+        for (PrintWriter pw : printWriterHashMap.values()) {
             pw.flush();
         }
     }

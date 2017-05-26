@@ -44,11 +44,11 @@ public class DefaultPullConsumer implements PullConsumer {
             throw new ClientOMSException("You have alreadly attached to a queue " + queue);
         }
         queue = queueName;
-        String str = "";
-        for (String topic:topics) {
-            str += topic + ",";
-        }
-        System.out.println(this.toString() + " attachQueue: " + queueName + " topics: [" + str + "]");
+//        String str = "";
+//        for (String topic:topics) {
+//            str += topic + ",";
+//        }
+//        System.out.println(this.toString() + " attachQueue: " + queueName + " topics: [" + str + "]");
         messageDrawer.attachQueue(queueName, topics);
     }
 
