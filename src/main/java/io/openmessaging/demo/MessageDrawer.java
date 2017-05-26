@@ -84,8 +84,7 @@ public class MessageDrawer {
         String[] splitRow = row.split("\\|");
         String propertiesString = splitRow[0];
         String headersString = splitRow[1];
-        String bodyString = splitRow[2];
-        String body = bodyString.split(":")[1];
+        String body = splitRow[2];
         Message message = new DefaultBytesMessage(body.getBytes());
         if (!propertiesString.equals("")) {
             String[] properties = propertiesString.split("\t");

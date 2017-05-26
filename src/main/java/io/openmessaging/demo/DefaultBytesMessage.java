@@ -94,7 +94,7 @@ public class DefaultBytesMessage implements BytesMessage {
             }
         }
         result.append("|");
-        result.append("body:").append(new String(body));
+        result.append(new String(body));
         return result.toString();
     }
 }
