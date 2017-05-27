@@ -20,11 +20,18 @@ public class MessageStore {
 
     public PrintWriter putBucketFile(String storePath, String bucket) {
         String fileName = storePath + "/" + bucket;
+        PrintWriter ret, pw;
+        
+        ret = null;
         try {
-            printWriterBuckets.putIfAbsent(bucket, new PrintWriter(new BufferedWriter(new FileWriter(fileName), 819200)));
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(fileName), 819200));
+            ret = printWriterBuckets.putIfAbsent(bucket, pw);
+
+            if(ret == null) ret = pw;
+            else pw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return printWriterBuckets.get(bucket);
+        return ret;
     }
 }
