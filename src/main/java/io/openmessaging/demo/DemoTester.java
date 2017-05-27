@@ -84,7 +84,8 @@ public class DemoTester {
             }
             long endConsumer = System.currentTimeMillis();
             long T2 = endConsumer - startConsumer;
-            System.out.println(String.format("Team1 cost:%d ms tps:%d q/ms", T2 + T1, (queue1Offset + topic1Offset)/(T1 + T2)));
+            System.out.println(String.format("T1: %d ms|%d qps, T2: %d ms|%d qps", T1, (queue1Offset + topic1Offset)/T1, T2, (queue1Offset + topic1Offset)/T2));
+//            System.out.println(String.format("Team1 cost:%d ms tps:%d q/ms", T2 + T1, (queue1Offset + topic1Offset)/(T1 + T2)));
 
         }
 
@@ -123,7 +124,8 @@ public class DemoTester {
             }
             long endConsumer = System.currentTimeMillis();
             long T2 = endConsumer - startConsumer;
-            System.out.println(String.format("Team2 cost:%d ms tps:%d q/ms", T2 + T1, (queue2Offset + topic1Offset)/(T1 + T2)));
+            System.out.println(String.format("T1: %d ms|%d qps, T2: %d ms|%d qps", T1, (queue2Offset + topic1Offset)/T1, T2, (queue2Offset + topic1Offset)/T2));
+//            System.out.println(String.format("Team2 cost:%d ms tps:%d q/ms", T2 + T1, (queue2Offset + topic1Offset)/(T1 + T2)));
         }
 
 
