@@ -15,13 +15,12 @@ public class MessageStore {
         return INSTANCE;
     }
 
-//    private Map<String, PrintWriter> printWriterBuckets = new ConcurrentHashMap<>(1024);
     private Map<String, FileWriter> fileWriterBuckets = new ConcurrentHashMap<>(1024);
 
     public FileWriter putBucketFile(String storePath, String bucket) {
         String fileName = storePath + "/" + bucket;
-//        PrintWriter ret, pw;
         FileWriter ret, fw;
+        
         ret = null;
         try {
             fw = new FileWriter(fileName);
