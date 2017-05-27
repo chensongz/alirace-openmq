@@ -29,7 +29,7 @@ public class MessageDrawer {
         File file = new File(fileName);
         System.out.println("file name: " + file.getAbsolutePath() + " file size: " + file.length());
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(file), 8192);
+            BufferedReader reader = new BufferedReader(new FileReader(file), 819200);
             String row;
             int num = 0;
             while ((row = reader.readLine()) != null) {
