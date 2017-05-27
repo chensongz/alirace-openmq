@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,7 +20,7 @@ public class MessageStore {
     public PrintWriter putBucketFile(String storePath, String bucket) {
         String fileName = storePath + "/" + bucket;
         PrintWriter ret, pw;
-        
+
         ret = null;
         try {
             pw = new PrintWriter(new BufferedWriter(new FileWriter(fileName), 819200));
