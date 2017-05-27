@@ -54,6 +54,8 @@ public class DefaultProducer  implements Producer {
             throw new ClientOMSException(String.format("Queue:%s Topic:%s should put one and only one", true, queue));
         }
 
+        //TODO every thread keeps a map of PrintWriter
+
         PrintWriter pw = messageStore.putBucketFile(storePath, topic != null ? topic : queue);
         pw.println(message.toString());
         printWriterHashSet.add(pw);
