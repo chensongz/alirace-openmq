@@ -1,11 +1,9 @@
 package io.openmessaging.demo;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
+import java.nio.channels.FileChannel;
 
 public class MessageStore {
 
@@ -15,25 +13,22 @@ public class MessageStore {
         return INSTANCE;
     }
 
-//    private Map<String, PrintWriter> printWriterBuckets = new ConcurrentHashMap<>(1024);
-    private Map<String, FileWriter> fileWriterBuckets = new ConcurrentHashMap<>(1024);
+    private Map<String, PrintWriter> fileWriterBuckets = new HashMap<>(1024);
 
-    public FileWriter putBucketFile(String storePath, String bucket) {
+    public synchronized PrintWriter putBucketFile(String storePath, String bucket) {
+
         String fileName = storePath + "/" + bucket;
-//        PrintWriter ret, pw;
-        FileWriter ret, fw;
-        ret = null;
+
+        PrintWriter pw = null;
         try {
-//            pw = new PrintWriter(new BufferedWriter(new FileWriter(fileName), 819200));
-//            ret = printWriterBuckets.putIfAbsent(bucket, pw);
-
-            fw = new FileWriter(fileName);
-
-            if(ret == null) ret = fw;
-            else fw.close();
+            if(!fileWriterBuckets.containsKey(bucket)){
+                pw = new PrintWriter(new BufferedWriter(new FileWriter(fileName), 819200));
+            }else{
+                pw = fileWriterBuckets.get(bucket);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ret;
+        return pw;
     }
 }
