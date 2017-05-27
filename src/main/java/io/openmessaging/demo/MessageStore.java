@@ -24,8 +24,8 @@ public class MessageStore {
         FileWriter ret, fw;
         ret = null;
         try {
-//            pw = new PrintWriter(new BufferedWriter(new FileWriter(fileName), 819200));
-//            ret = printWriterBuckets.putIfAbsent(bucket, pw);
+            fw = new FileWriter(fileName);
+            ret = fileWriterBuckets.putIfAbsent(bucket, fw);
 
             fw = new FileWriter(fileName);
 
