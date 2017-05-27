@@ -2,7 +2,9 @@ package io.openmessaging.demo;
 
 import io.openmessaging.*;
 
+import java.io.BufferedWriter;
 import java.io.PrintWriter;
+import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +16,7 @@ public class DefaultProducer  implements Producer {
 
     private String storePath;
     private Map<String, PrintWriter> printWriterHashMap = new HashMap<>(1024);
+
 
     public DefaultProducer(KeyValue properties) {
         this.properties = properties;
@@ -49,13 +52,17 @@ public class DefaultProducer  implements Producer {
             throw new ClientOMSException(String.format("Queue:%s Topic:%s should put one and only one", true, queue));
         }
         String bucket = topic != null ? topic : queue;
+
         PrintWriter pw;
+        FileWriter fw;
         if (!printWriterHashMap.containsKey(bucket)) {
-            pw = messageStore.putBucketFile(storePath, bucket);
+            fw = messageStore.putBucketFile(storePath, bucket);
+            pw = new PrintWriter(new BufferedWriter(fw, 819200));
             printWriterHashMap.put(bucket, pw);
         } else {
             pw = printWriterHashMap.get(bucket);
         }
+
         pw.println(message.toString());
     }
 

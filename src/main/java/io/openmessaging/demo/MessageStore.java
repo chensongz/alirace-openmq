@@ -15,19 +15,22 @@ public class MessageStore {
         return INSTANCE;
     }
 
-    private Map<String, PrintWriter> printWriterBuckets = new ConcurrentHashMap<>(1024);
+//    private Map<String, PrintWriter> printWriterBuckets = new ConcurrentHashMap<>(1024);
+    private Map<String, FileWriter> fileWriterBuckets = new ConcurrentHashMap<>(1024);
 
-    public PrintWriter putBucketFile(String storePath, String bucket) {
+    public FileWriter putBucketFile(String storePath, String bucket) {
         String fileName = storePath + "/" + bucket;
-        PrintWriter ret, pw;
-
+//        PrintWriter ret, pw;
+        FileWriter ret, fw;
         ret = null;
         try {
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(fileName), 819200));
-            ret = printWriterBuckets.putIfAbsent(bucket, pw);
+//            pw = new PrintWriter(new BufferedWriter(new FileWriter(fileName), 819200));
+//            ret = printWriterBuckets.putIfAbsent(bucket, pw);
 
-            if(ret == null) ret = pw;
-            else pw.close();
+            fw = new FileWriter(fileName);
+
+            if(ret == null) ret = fw;
+            else fw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

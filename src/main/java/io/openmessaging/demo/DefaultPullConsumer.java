@@ -41,7 +41,7 @@ public class DefaultPullConsumer implements PullConsumer {
 
     @Override public void attachQueue(String queueName, Collection<String> topics) {
         if (queue != null && !queue.equals(queueName)) {
-            throw new ClientOMSException("You have alreadly attached to a queue " + queue);
+            throw new ClientOMSException("You have already attached to a queue " + queue);
         }
         queue = queueName;
 //        String str = "";

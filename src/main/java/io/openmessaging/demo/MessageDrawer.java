@@ -27,7 +27,7 @@ public class MessageDrawer {
 
     private void readFile(String fileName) {
         File file = new File(fileName);
-        System.out.println("file name: " + file.getAbsolutePath() + " file size: " + file.length());
+//        System.out.println("file name: " + file.getAbsolutePath() + " file size: " + file.length());
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file), 819200);
             String row;
