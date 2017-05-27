@@ -1,9 +1,7 @@
 package io.openmessaging.demo;
 
-import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,13 +18,12 @@ public class MessageStore {
     public FileWriter putBucketFile(String storePath, String bucket) {
         String fileName = storePath + "/" + bucket;
         FileWriter ret, fw;
-        
+
         ret = null;
         try {
-            fw = new FileWriter(fileName);
-            ret = fileWriterBuckets.putIfAbsent(bucket, fw);
 
             fw = new FileWriter(fileName);
+            ret = fileWriterBuckets.putIfAbsent(bucket, fw);
 
             if(ret == null) ret = fw;
             else fw.close();
