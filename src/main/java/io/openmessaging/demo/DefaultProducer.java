@@ -2,9 +2,7 @@ package io.openmessaging.demo;
 
 import io.openmessaging.*;
 
-import java.io.BufferedWriter;
 import java.io.PrintWriter;
-import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,16 +51,13 @@ public class DefaultProducer  implements Producer {
         }
         String bucket = topic != null ? topic : queue;
 
-        PrintWriter pw;
-        FileWriter fw;
+        PrintWriter pw = null;
         if (!printWriterHashMap.containsKey(bucket)) {
-            fw = messageStore.putBucketFile(storePath, bucket);
-            pw = new PrintWriter(new BufferedWriter(fw, 819200));
+            pw = messageStore.putBucketFile(storePath, bucket);
             printWriterHashMap.put(bucket, pw);
         } else {
             pw = printWriterHashMap.get(bucket);
         }
-
         pw.println(message.toString());
     }
 

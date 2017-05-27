@@ -1,9 +1,8 @@
 package io.openmessaging.demo;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 
 public class MessageStore {
 
@@ -12,24 +11,22 @@ public class MessageStore {
     public static MessageStore getInstance() {
         return INSTANCE;
     }
+    private Map<String, PrintWriter> fileWriterBuckets = new HashMap<>(1024);
 
-    private Map<String, FileWriter> fileWriterBuckets = new ConcurrentHashMap<>(1024);
+    public synchronized PrintWriter putBucketFile(String storePath, String bucket) {
 
-    public FileWriter putBucketFile(String storePath, String bucket) {
         String fileName = storePath + "/" + bucket;
-        FileWriter ret, fw;
 
-        ret = null;
+        PrintWriter pw = null;
         try {
-
-            fw = new FileWriter(fileName);
-            ret = fileWriterBuckets.putIfAbsent(bucket, fw);
-
-            if(ret == null) ret = fw;
-            else fw.close();
+            if(!fileWriterBuckets.containsKey(bucket)){
+                pw = new PrintWriter(new BufferedWriter(new FileWriter(fileName), 819200));
+            }else{
+                pw = fileWriterBuckets.get(bucket);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ret;
+        return pw;
     }
 }
