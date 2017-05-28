@@ -9,9 +9,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
-/**
- * Created by bgk on 5/22/17.
- */
 public class MessageFetch {
     private LinkedList<Message> messageQueue = new LinkedList<>();
     private LinkedList<String> nonConsumeFiles = new LinkedList<>();

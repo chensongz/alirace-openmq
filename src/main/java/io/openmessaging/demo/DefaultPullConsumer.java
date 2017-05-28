@@ -18,28 +18,34 @@ public class DefaultPullConsumer implements PullConsumer {
     }
 
 
-    @Override public KeyValue properties() {
+    @Override
+    public KeyValue properties() {
         return properties;
     }
 
 
-    @Override public Message poll() {
+    @Override
+    public Message poll() {
         return messageFetch.pullMessage();
     }
 
-    @Override public Message poll(KeyValue properties) {
+    @Override
+    public Message poll(KeyValue properties) {
         throw new UnsupportedOperationException("Unsupported");
     }
 
-    @Override public void ack(String messageId) {
+    @Override
+    public void ack(String messageId) {
         throw new UnsupportedOperationException("Unsupported");
     }
 
-    @Override public void ack(String messageId, KeyValue properties) {
+    @Override
+    public void ack(String messageId, KeyValue properties) {
         throw new UnsupportedOperationException("Unsupported");
     }
 
-    @Override public void attachQueue(String queueName, Collection<String> topics) {
+    @Override
+    public void attachQueue(String queueName, Collection<String> topics) {
         if (queue != null && !queue.equals(queueName)) {
             throw new ClientOMSException("You have already attached to a queue " + queue);
         }

@@ -2,21 +2,17 @@ package io.openmessaging.demo;
 
 import io.openmessaging.*;
 
-import java.io.PrintWriter;
-import java.nio.MappedByteBuffer;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-public class DefaultProducer  implements Producer {
+public class DefaultProducer implements Producer {
     private MessageFactory messageFactory = new DefaultMessageFactory();
     private MessageStore messageStore = MessageStore.getInstance();
 
     private KeyValue properties;
 
     private String storePath;
-//    private Map<String, PrintWriter> printWriterHashMap = new HashMap<>(1024);
+    //    private Map<String, PrintWriter> printWriterHashMap = new HashMap<>(1024);
     private Map<String, MappedWriter> bufferHashMap = new HashMap<>(1024);
 //    private Set<String> buckets = new HashSet<>(1024);
 
@@ -27,27 +23,33 @@ public class DefaultProducer  implements Producer {
     }
 
 
-    @Override public BytesMessage createBytesMessageToTopic(String topic, byte[] body) {
+    @Override
+    public BytesMessage createBytesMessageToTopic(String topic, byte[] body) {
         return messageFactory.createBytesMessageToTopic(topic, body);
     }
 
-    @Override public BytesMessage createBytesMessageToQueue(String queue, byte[] body) {
+    @Override
+    public BytesMessage createBytesMessageToQueue(String queue, byte[] body) {
         return messageFactory.createBytesMessageToQueue(queue, body);
     }
 
-    @Override public void start() {
+    @Override
+    public void start() {
 
     }
 
-    @Override public void shutdown() {
+    @Override
+    public void shutdown() {
 
     }
 
-    @Override public KeyValue properties() {
+    @Override
+    public KeyValue properties() {
         return properties;
     }
 
-    @Override public void send(Message message) {
+    @Override
+    public void send(Message message) {
         if (message == null) throw new ClientOMSException("Message should not be null");
         String topic = message.headers().getString(MessageHeader.TOPIC);
         String queue = message.headers().getString(MessageHeader.QUEUE);
@@ -55,9 +57,9 @@ public class DefaultProducer  implements Producer {
             throw new ClientOMSException(String.format("Queue:%s Topic:%s should put one and only one", true, queue));
         }
         String bucket = topic != null ? topic : queue;
-        
+
         MappedWriter mw;
-        
+
         if (!bufferHashMap.containsKey(bucket)) {
             mw = messageStore.getMappedWriter(storePath, bucket);
             bufferHashMap.put(bucket, mw);
@@ -67,35 +69,43 @@ public class DefaultProducer  implements Producer {
         mw.send(message);
     }
 
-    @Override public void send(Message message, KeyValue properties) {
+    @Override
+    public void send(Message message, KeyValue properties) {
         throw new UnsupportedOperationException("Unsupported");
     }
 
-    @Override public Promise<Void> sendAsync(Message message) {
+    @Override
+    public Promise<Void> sendAsync(Message message) {
         throw new UnsupportedOperationException("Unsupported");
     }
 
-    @Override public Promise<Void> sendAsync(Message message, KeyValue properties) {
+    @Override
+    public Promise<Void> sendAsync(Message message, KeyValue properties) {
         throw new UnsupportedOperationException("Unsupported");
     }
 
-    @Override public void sendOneway(Message message) {
+    @Override
+    public void sendOneway(Message message) {
         throw new UnsupportedOperationException("Unsupported");
     }
 
-    @Override public void sendOneway(Message message, KeyValue properties) {
+    @Override
+    public void sendOneway(Message message, KeyValue properties) {
         throw new UnsupportedOperationException("Unsupported");
     }
 
-    @Override public BatchToPartition createBatchToPartition(String partitionName) {
+    @Override
+    public BatchToPartition createBatchToPartition(String partitionName) {
         throw new UnsupportedOperationException("Unsupported");
     }
 
-    @Override public BatchToPartition createBatchToPartition(String partitionName, KeyValue properties) {
+    @Override
+    public BatchToPartition createBatchToPartition(String partitionName, KeyValue properties) {
         throw new UnsupportedOperationException("Unsupported");
     }
 
-    @Override public void flush() {
+    @Override
+    public void flush() {
 //        for (String bucket : buckets) {
 //            messageStore.flush(bucket);
 //        }

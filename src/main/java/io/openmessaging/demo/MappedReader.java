@@ -9,8 +9,6 @@ import java.nio.channels.FileChannel;
 
 public class MappedReader {
 
-    private final long SIZE = 32 * 1024;
-
     private FileChannel fc;
     private MappedByteBuffer buf;
 

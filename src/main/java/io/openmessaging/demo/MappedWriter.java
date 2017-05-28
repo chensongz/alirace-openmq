@@ -17,46 +17,44 @@ public class MappedWriter {
 
     private Object lock = new Object();
 
-    public MappedWriter(String filename){
-        try{
+    public MappedWriter(String filename) {
+        try {
             fc = new RandomAccessFile(filename, "rw").getChannel();
             offset = 0;
             map(offset);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void map(long offset){
-        try{
+    private void map(long offset) {
+        try {
             buf = fc.map(FileChannel.MapMode.READ_WRITE, offset, SIZE);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void send(Message message){
+    public void send(Message message) {
         byte[] msg = message.toString().getBytes();
         int msgLen = msg.length;
         int totLen = 4 + 1 + msgLen;
 
         synchronized (lock) {
-
-            if(totLen > buf.remaining()){
+            if (totLen > buf.remaining()) {
                 offset += buf.position();
                 map(offset);
             }
-
             buf.putInt(msgLen);
             buf.put(msg);
             buf.putChar('$');
         }
     }
 
-    public void close(){
-        try{
+    public void close() {
+        try {
             fc.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
