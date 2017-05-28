@@ -15,6 +15,8 @@ public class MappedWriter {
     private MappedByteBuffer buf;
     private long offset; //上次map得到的buffer的开头位置
 
+    private Object lock = new Object();
+
     public MappedWriter(String filename){
         try{
             fc = new RandomAccessFile(filename, "rw").getChannel();
@@ -33,19 +35,30 @@ public class MappedWriter {
         }
     }
 
-    public synchronized void send(Message message){
+    public void send(Message message){
         byte[] msg = message.toString().getBytes();
         int msgLen = msg.length;
         int totLen = 4 + 1 + msgLen;
 
-        if(totLen > buf.remaining()){
-            offset += buf.position();
-            map(offset);
-        }
+        synchronized (lock) {
 
-        buf.putInt(msgLen);
-        buf.put(msg);
-        buf.putChar('$');
+            if(totLen > buf.remaining()){
+                offset += buf.position();
+                map(offset);
+            }
+
+            buf.putInt(msgLen);
+            buf.put(msg);
+            buf.putChar('$');
+        }
+    }
+
+    public void close(){
+        try{
+            fc.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
 }

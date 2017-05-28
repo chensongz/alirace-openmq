@@ -2,6 +2,7 @@ package io.openmessaging.demo;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MessageStore {
 
@@ -11,7 +12,7 @@ public class MessageStore {
         return INSTANCE;
     }
 
-    private Map<String, MappedWriter> bufferBuckets = new HashMap<>(1024);
+    private Map<String, MappedWriter> bufferBuckets = new ConcurrentHashMap<>(1024);
 
 
 //    public synchronized PrintWriter putBucketFile(String storePath, String bucket) {
@@ -33,11 +34,16 @@ public class MessageStore {
 
     public synchronized MappedWriter getMappedWriter(String storePath, String bucket) {
         String fileName = storePath + "/" + bucket;
-        MappedWriter mw;
+        MappedWriter mw, ret;
         if (!bufferBuckets.containsKey(bucket)) {
             mw = new MappedWriter(fileName);
-            bufferBuckets.put(bucket, mw);
-            return mw;
+            ret = bufferBuckets.putIfAbsent(bucket, mw);
+
+            if(ret == null) return mw;
+            else{
+                mw.close();
+                return ret;
+            }
         } else {
             return bufferBuckets.get(bucket);
         }
