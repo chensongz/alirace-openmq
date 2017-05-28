@@ -17,8 +17,8 @@ public class DefaultProducer  implements Producer {
 
     private String storePath;
 //    private Map<String, PrintWriter> printWriterHashMap = new HashMap<>(1024);
-//    private Map<String, MappedByteBuffer> bufferHashMap = new HashMap<>(1024);
-    private Set<String> buckets = new HashSet<>(1024);
+    private Map<String, MappedWriter> bufferHashMap = new HashMap<>(1024);
+//    private Set<String> buckets = new HashSet<>(1024);
 
 
     public DefaultProducer(KeyValue properties) {
@@ -55,20 +55,16 @@ public class DefaultProducer  implements Producer {
             throw new ClientOMSException(String.format("Queue:%s Topic:%s should put one and only one", true, queue));
         }
         String bucket = topic != null ? topic : queue;
-
-//        PrintWriter pw = null;
-        byte[] msg = message.toString().getBytes();
-        int msgSize = msg.length;
-        messageStore.putBucketFile(storePath, bucket, msgSize, msg);
-        buckets.add(bucket);
-//        buf.put(msg);
-//        if (!bufferHashMap.containsKey(bucket)) {
-//            pw = messageStore.putBucketFile(storePath, bucket);
-//            bufferHashMap.put(bucket, pw);
-//        } else {
-//            pw = printWriterHashMap.get(bucket);
-//        }
-//        pw.println(message.toString());
+        
+        MappedWriter mw;
+        
+        if (!bufferHashMap.containsKey(bucket)) {
+            mw = messageStore.getMappedWriter(storePath, bucket);
+            bufferHashMap.put(bucket, mw);
+        } else {
+            mw = bufferHashMap.get(bucket);
+        }
+        mw.send(message);
     }
 
     @Override public void send(Message message, KeyValue properties) {
@@ -100,8 +96,8 @@ public class DefaultProducer  implements Producer {
     }
 
     @Override public void flush() {
-        for (String bucket : buckets) {
-            messageStore.flush(bucket);
-        }
+//        for (String bucket : buckets) {
+//            messageStore.flush(bucket);
+//        }
     }
 }
