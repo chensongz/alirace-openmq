@@ -3,8 +3,11 @@ package io.openmessaging.demo;
 import io.openmessaging.*;
 
 import java.io.PrintWriter;
+import java.nio.MappedByteBuffer;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class DefaultProducer  implements Producer {
     private MessageFactory messageFactory = new DefaultMessageFactory();
@@ -13,7 +16,9 @@ public class DefaultProducer  implements Producer {
     private KeyValue properties;
 
     private String storePath;
-    private Map<String, PrintWriter> printWriterHashMap = new HashMap<>(1024);
+//    private Map<String, PrintWriter> printWriterHashMap = new HashMap<>(1024);
+    private Map<String, MappedWriter> bufferHashMap = new HashMap<>(1024);
+//    private Set<String> buckets = new HashSet<>(1024);
 
 
     public DefaultProducer(KeyValue properties) {
@@ -50,15 +55,16 @@ public class DefaultProducer  implements Producer {
             throw new ClientOMSException(String.format("Queue:%s Topic:%s should put one and only one", true, queue));
         }
         String bucket = topic != null ? topic : queue;
-
-        PrintWriter pw = null;
-        if (!printWriterHashMap.containsKey(bucket)) {
-            pw = messageStore.putBucketFile(storePath, bucket);
-            printWriterHashMap.put(bucket, pw);
+        
+        MappedWriter mw;
+        
+        if (!bufferHashMap.containsKey(bucket)) {
+            mw = messageStore.getMappedWriter(storePath, bucket);
+            bufferHashMap.put(bucket, mw);
         } else {
-            pw = printWriterHashMap.get(bucket);
+            mw = bufferHashMap.get(bucket);
         }
-        pw.println(message.toString());
+        mw.send(message);
     }
 
     @Override public void send(Message message, KeyValue properties) {
@@ -90,8 +96,8 @@ public class DefaultProducer  implements Producer {
     }
 
     @Override public void flush() {
-        for (PrintWriter pw : printWriterHashMap.values()) {
-            pw.flush();
-        }
+//        for (String bucket : buckets) {
+//            messageStore.flush(bucket);
+//        }
     }
 }

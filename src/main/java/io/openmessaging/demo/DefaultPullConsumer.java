@@ -7,14 +7,14 @@ import io.openmessaging.PullConsumer;
 import java.util.Collection;
 
 public class DefaultPullConsumer implements PullConsumer {
-    private MessageDrawer messageDrawer;
+    private MessageFetch messageFetch;
     private KeyValue properties;
     private String queue;
 
     public DefaultPullConsumer(KeyValue properties) {
         this.properties = properties;
         String storePath = properties.getString("STORE_PATH");
-        messageDrawer = new MessageDrawer(storePath);
+        messageFetch = new MessageFetch(storePath);
     }
 
 
@@ -24,7 +24,7 @@ public class DefaultPullConsumer implements PullConsumer {
 
 
     @Override public Message poll() {
-        return messageDrawer.pullMessage();
+        return messageFetch.pullMessage();
     }
 
     @Override public Message poll(KeyValue properties) {
@@ -49,7 +49,7 @@ public class DefaultPullConsumer implements PullConsumer {
 //            str += topic + ",";
 //        }
 //        System.out.println(this.toString() + " attachQueue: " + queueName + " topics: [" + str + "]");
-        messageDrawer.attachQueue(queueName, topics);
+        messageFetch.attachQueue(queueName, topics);
     }
 
 
