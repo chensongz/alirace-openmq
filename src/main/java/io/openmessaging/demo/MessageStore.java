@@ -31,7 +31,7 @@ public class MessageStore {
 //        return pw;
 //    }
 
-    public MappedWriter getMappedWriter(String storePath, String bucket) {
+    public synchronized MappedWriter getMappedWriter(String storePath, String bucket) {
         String fileName = storePath + "/" + bucket;
         MappedWriter mw, ret;
         if (!bufferBuckets.containsKey(bucket)) {
