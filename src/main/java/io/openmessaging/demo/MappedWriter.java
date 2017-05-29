@@ -9,7 +9,7 @@ import java.nio.channels.FileChannel;
 
 public class MappedWriter {
 
-    private final long SIZE = 32 * 1024 * 1024;
+    private final long SIZE = 35 * 1024 * 1024;
 
     private FileChannel fc;
     private MappedByteBuffer buf;
@@ -43,7 +43,7 @@ public class MappedWriter {
 //        System.out.println("### msgLen: " + msgLen);
 
         synchronized (lock) {
-            if (totLen > buf.remaining()) {
+            if (totLen >= buf.remaining()) {
                 offset += buf.position();
                 map(offset);
                 //for test
