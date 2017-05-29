@@ -17,7 +17,7 @@ public class MappedReader {
             fc = new RandomAccessFile(filename, "rw").getChannel();
             map(0);
             //for test
-            System.out.printf("file %s size: %d", filename, fc.size());
+//            System.out.printf("file %s size: %d", filename, fc.size());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -37,7 +37,7 @@ public class MappedReader {
         byte[] msg = new byte[msgLen];
         buf.get(msg, 0, msgLen);
         //for test
-        System.out.println("msg: " + new String(msg));
+//        System.out.println("msg: " + new String(msg));
         char tail = buf.getChar();
         if (tail != '$') return null;
         else return parseMessage(new String(msg));
