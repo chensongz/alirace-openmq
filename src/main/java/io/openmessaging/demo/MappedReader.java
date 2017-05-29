@@ -25,7 +25,7 @@ public class MappedReader {
 
     private void map(long offset) {
         try {
-            buf = fc.map(FileChannel.MapMode.READ_ONLY, offset, fc.size());
+            buf = fc.map(FileChannel.MapMode.READ_WRITE, offset, fc.size());
         } catch (Exception e) {
             e.printStackTrace();
         }

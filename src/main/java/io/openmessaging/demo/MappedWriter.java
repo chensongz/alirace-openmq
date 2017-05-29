@@ -47,14 +47,14 @@ public class MappedWriter {
                 offset += buf.position();
                 map(offset);
                 //for test
-//                System.out.printf("############## remaped offset %s ################", offset);
+                System.out.printf("############## remaped offset %s ################", offset);
             }
             buf.putInt(msgLen);
             buf.put(msg);
             buf.putChar('$');
             //for test
 //            System.out.println("### fc info: " + fc.toString());
-//            System.out.println("### buf info: " + buf.toString());
+            System.out.println("### buf info: " + buf.toString());
         }
     }
 
