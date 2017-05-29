@@ -39,7 +39,7 @@ public class MessageStore {
             ret = bufferBuckets.putIfAbsent(bucket, mw);
             if (ret == null) return mw;
             else {
-                mw.close();
+//                mw.close();
                 return ret;
             }
         } else {
