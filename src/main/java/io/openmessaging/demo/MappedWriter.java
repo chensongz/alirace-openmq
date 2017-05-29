@@ -39,15 +39,22 @@ public class MappedWriter {
         byte[] msg = message.toString().getBytes();
         int msgLen = msg.length;
         int totLen = 4 + 1 + msgLen;
+        //for test
+        System.out.println("### msgLen: " + msgLen);
 
         synchronized (lock) {
             if (totLen > buf.remaining()) {
                 offset += buf.position();
                 map(offset);
+                //for test
+                System.out.printf("############## remaped offset %s ################", offset);
             }
             buf.putInt(msgLen);
             buf.put(msg);
             buf.putChar('$');
+            //for test
+            System.out.println("### fc info: " + fc.toString());
+            System.out.println("### buf info: " + buf.toString());
         }
     }
 
