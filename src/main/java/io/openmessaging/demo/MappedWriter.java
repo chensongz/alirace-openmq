@@ -9,7 +9,7 @@ import java.nio.channels.FileChannel;
 
 public class MappedWriter {
 
-    private final long SIZE = 32 * 1024;
+    private final long SIZE = 32 * 1024 * 1024;
 
     private FileChannel fc;
     private MappedByteBuffer buf;
