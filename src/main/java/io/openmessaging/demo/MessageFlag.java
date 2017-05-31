@@ -7,7 +7,7 @@ public class MessageFlag {
     public static final byte MESSAGE_END = 0x24; //$
     public static final byte KEY_END = 0x3a; //:
     public static final byte VALUE_END = 0x3b; //;
-    public static final byte KEY_VALUE_END = 0x7c; //|
+    public static final byte FIELD_END = 0x7c; //|
 
     //Headers Key
     public static final byte QUEUE = 1;
