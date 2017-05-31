@@ -37,6 +37,12 @@ public class MappedWriter {
     }
 
     public synchronized void send(BytesMessage message) {
+        //todo remap
+        if (256 > buf.remaining()) {
+            offset += buf.position();
+            map(offset);
+        }
+
         buf.put(MessageFlag.MESSAGE_START);
         putBody(message.getBody());
         buf.put(MessageFlag.FIELD_END);
