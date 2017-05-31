@@ -5,13 +5,14 @@ import io.openmessaging.Message;
 import io.openmessaging.MessageHeader;
 import io.openmessaging.Producer;
 import io.openmessaging.PullConsumer;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import org.junit.Assert;
 
 public class DemoTester {
-
 
     public static void main(String[] args) {
         KeyValue properties = new DefaultKeyValue();
@@ -20,7 +21,7 @@ public class DemoTester {
         //所有producer和consumer的STORE_PATH都是一样的，选手可以自由在该路径下创建文件
          */
 //        properties.put("STORE_PATH", "/home/zwy/test");
-        properties.put("STORE_PATH", "/home/zhuchensong/project/aliyun/zbz/test");
+        properties.put("STORE_PATH", "/home/zhuchensong/project/aliyun/open-messaging-race/chensongz/test");
 
         //这个测试程序的测试逻辑与实际评测相似，但注意这里是单线程的，实际测试时会是多线程的，并且发送完之后会Kill进程，再起消费逻辑
 
@@ -37,8 +38,8 @@ public class DemoTester {
         List<Message> messagesForQueue2 = new ArrayList<>(1024);
         for (int i = 0; i < 1024; i++) {
             //注意实际比赛可能还会向消息的headers或者properties里面填充其它内容
-            messagesForTopic1.add(producer.createBytesMessageToTopic(topic1,  (topic1 + i).getBytes()));
-            messagesForTopic2.add(producer.createBytesMessageToTopic(topic2,  (topic2 + i).getBytes()));
+            messagesForTopic1.add(producer.createBytesMessageToTopic(topic1, (topic1 + i).getBytes()));
+            messagesForTopic2.add(producer.createBytesMessageToTopic(topic2, (topic2 + i).getBytes()));
             messagesForQueue1.add(producer.createBytesMessageToQueue(queue1, (queue1 + i).getBytes()));
             messagesForQueue2.add(producer.createBytesMessageToQueue(queue2, (queue2 + i).getBytes()));
         }
@@ -55,6 +56,9 @@ public class DemoTester {
         long end = System.currentTimeMillis();
 
         long T1 = end - start;
+
+        System.out.printf("Producer T1: %d ms | %d qps",
+                T1, (1024 * 4) / T1);
 
         //请保证数据写入磁盘中
 
@@ -77,17 +81,18 @@ public class DemoTester {
                 //实际测试时，会一一比较各个字段
                 if (topic != null) {
                     Assert.assertEquals(topic1, topic);
-                    Assert.assertEquals(new String(((DefaultBytesMessage)messagesForTopic1.get(topic1Offset++)).getBody()), new String(((DefaultBytesMessage)message).getBody()));
+                    Assert.assertEquals(new String(((DefaultBytesMessage) messagesForTopic1.get(topic1Offset++)).getBody()), new String(((DefaultBytesMessage) message).getBody()));
                 } else {
                     Assert.assertEquals(queue1, queue);
-                    Assert.assertEquals(new String(((DefaultBytesMessage)messagesForQueue1.get(queue1Offset++)).getBody()), new String(((DefaultBytesMessage)message).getBody()));
+                    Assert.assertEquals(new String(((DefaultBytesMessage) messagesForQueue1.get(queue1Offset++)).getBody()), new String(((DefaultBytesMessage) message).getBody()));
                 }
             }
             long endConsumer = System.currentTimeMillis();
             long T2 = endConsumer - startConsumer;
-            System.out.println(String.format("T1: %d ms|%d qps, T2: %d ms|%d qps", T1, (queue1Offset + topic1Offset)/T1, T2, (queue1Offset + topic1Offset)/T2));
-//            System.out.println(String.format("Team1 cost:%d ms tps:%d q/ms", T2 + T1, (queue1Offset + topic1Offset)/(T1 + T2)));
-
+            System.out.println(String.format("T1: %d ms|%d qps, T2: %d ms|%d qps, total: %d qps",
+                    T1, (queue1Offset + topic1Offset) / T1,
+                    T2, (queue1Offset + topic1Offset) / T2,
+                    (queue1Offset + topic1Offset) / (T1 + T2)));
         }
 
         //消费样例2，实际测试时会Kill掉发送进程，另取进程进行消费
@@ -113,22 +118,22 @@ public class DemoTester {
                 //实际测试时，会一一比较各个字段
                 if (topic != null) {
                     if (topic.equals(topic1)) {
-                        Assert.assertEquals(new String(((DefaultBytesMessage)messagesForTopic1.get(topic1Offset++)).getBody()), new String(((DefaultBytesMessage)message).getBody()));
+                        Assert.assertEquals(new String(((DefaultBytesMessage) messagesForTopic1.get(topic1Offset++)).getBody()), new String(((DefaultBytesMessage) message).getBody()));
                     } else {
                         Assert.assertEquals(topic2, topic);
-                        Assert.assertEquals(new String(((DefaultBytesMessage)messagesForTopic2.get(topic2Offset++)).getBody()), new String(((DefaultBytesMessage)message).getBody()));
+                        Assert.assertEquals(new String(((DefaultBytesMessage) messagesForTopic2.get(topic2Offset++)).getBody()), new String(((DefaultBytesMessage) message).getBody()));
                     }
                 } else {
                     Assert.assertEquals(queue2, queue);
-                    Assert.assertEquals(new String(((DefaultBytesMessage)messagesForQueue2.get(queue2Offset++)).getBody()), new String(((DefaultBytesMessage)message).getBody()));
+                    Assert.assertEquals(new String(((DefaultBytesMessage) messagesForQueue2.get(queue2Offset++)).getBody()), new String(((DefaultBytesMessage) message).getBody()));
                 }
             }
             long endConsumer = System.currentTimeMillis();
             long T2 = endConsumer - startConsumer;
-            System.out.println(String.format("T1: %d ms|%d qps, T2: %d ms|%d qps", T1, (queue2Offset + topic1Offset)/T1, T2, (queue2Offset + topic1Offset)/T2));
-//            System.out.println(String.format("Team2 cost:%d ms tps:%d q/ms", T2 + T1, (queue2Offset + topic1Offset)/(T1 + T2)));
+            System.out.println(String.format("T1: %d ms|%d qps, T2: %d ms|%d qps, total: %d qps",
+                    T1, (queue2Offset + topic1Offset + topic2Offset) / T1,
+                    T2, (queue2Offset + topic1Offset + topic2Offset) / T2,
+                    (queue2Offset + topic1Offset + topic2Offset) / (T1 + T2)));
         }
-
-
     }
 }
