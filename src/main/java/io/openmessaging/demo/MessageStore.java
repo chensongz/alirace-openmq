@@ -13,7 +13,7 @@ public class MessageStore {
 
     private Map<String, MappedWriter> bufferBuckets = new ConcurrentHashMap<>(1024);
 
-    public MappedWriter getMappedWriter(String storePath, String bucket) {
+    public synchronized MappedWriter getMappedWriter(String storePath, String bucket) {
         String fileName = storePath + "/" + bucket;
         MappedWriter mw, ret;
         if (!bufferBuckets.containsKey(bucket)) {
