@@ -1,6 +1,8 @@
 package io.openmessaging.demo;
 
 
+import io.openmessaging.BytesMessage;
+import io.openmessaging.KeyValue;
 import io.openmessaging.Message;
 
 import java.io.RandomAccessFile;
@@ -35,7 +37,13 @@ public class MappedWriter {
         }
     }
 
-    public void send(Message message) {
+    public void send(BytesMessage message) {
+        buf.put(MessageFlag.MESSAGE_START);
+        putHeaders(message.headers());
+        putProperties(message.properties());
+        putBody(message.getBody());
+        buf.put(MessageFlag.MESSAGE_END);
+
         byte[] msg = message.toString().getBytes();
         int msgLen = msg.length;
         int totLen = 4 + 2 + msgLen;
@@ -64,6 +72,18 @@ public class MappedWriter {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void putHeaders(KeyValue headers) {
+
+    }
+
+    private void putProperties(KeyValue properties) {
+
+    }
+
+    private void putBody(byte[] body) {
+
     }
 
 }

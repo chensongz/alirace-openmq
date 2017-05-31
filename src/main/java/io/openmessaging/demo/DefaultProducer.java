@@ -66,7 +66,7 @@ public class DefaultProducer implements Producer {
         } else {
             mw = bufferHashMap.get(bucket);
         }
-        mw.send(message);
+        mw.send((BytesMessage) message);
     }
 
     @Override
