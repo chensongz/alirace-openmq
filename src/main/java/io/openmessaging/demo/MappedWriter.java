@@ -11,6 +11,7 @@ import java.nio.channels.FileChannel;
 public class MappedWriter {
 
     private static final long SIZE = 32 * 1024 * 1024;
+    private static final long MAX_MESSAGE_SIZE = 256 * 1024;
 
     private FileChannel fc;
     private MappedByteBuffer buf;
@@ -38,7 +39,7 @@ public class MappedWriter {
 
     public synchronized void send(BytesMessage message) {
         //todo remap
-        if (256 > buf.remaining()) {
+        if (MAX_MESSAGE_SIZE > buf.remaining()) {
             offset += buf.position();
             map(offset);
         }
