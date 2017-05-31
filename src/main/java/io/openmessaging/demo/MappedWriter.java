@@ -9,13 +9,13 @@ import java.nio.channels.FileChannel;
 
 public class MappedWriter {
 
-    private final long SIZE = 32 * 1024 * 1024;
+    private static final long SIZE = 32 * 1024 * 1024;
 
     private FileChannel fc;
     private MappedByteBuffer buf;
-    private long offset; //上次map得到的buffer的开头位置
+    private long offset; //write offset in the whole file
 
-    private Object lock = new Object();
+    private final Object lock = new Object();
 
     public MappedWriter(String filename) {
         try {
@@ -38,12 +38,12 @@ public class MappedWriter {
     public void send(Message message) {
         byte[] msg = message.toString().getBytes();
         int msgLen = msg.length;
-        int totLen = 4 + 1 + msgLen;
+        int totLen = 4 + 2 + msgLen;
         //for test
 //        System.out.println("### msgLen: " + msgLen);
 
         synchronized (lock) {
-            if (totLen >= buf.remaining()) {
+            if (totLen > buf.remaining()) {
                 offset += buf.position();
                 map(offset);
                 //for test

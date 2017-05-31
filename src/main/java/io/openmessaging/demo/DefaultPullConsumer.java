@@ -50,11 +50,12 @@ public class DefaultPullConsumer implements PullConsumer {
             throw new ClientOMSException("You have already attached to a queue " + queue);
         }
         queue = queueName;
-//        String str = "";
-//        for (String topic : topics) {
-//            str += topic + ",";
-//        }
-//        System.out.println(this.toString() + " attachQueue: " + queueName + " topics: [" + str + "]");
+        //for test
+        String str = "";
+        for (String topic : topics) {
+            str += topic + ",";
+        }
+        System.out.println(this.toString() + " attachQueue: " + queueName + " topics: [" + str + "]");
         messageFetch.attachQueue(queueName, topics);
     }
 

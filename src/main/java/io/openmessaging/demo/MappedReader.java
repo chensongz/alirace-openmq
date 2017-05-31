@@ -14,7 +14,7 @@ public class MappedReader {
 
     public MappedReader(String filename) {
         try {
-            fc = new RandomAccessFile(filename, "rw").getChannel();
+            fc = new RandomAccessFile(filename, "r").getChannel();
             map(0);
             //for test
 //            System.out.printf("file %s size: %d", filename, fc.size());
@@ -25,7 +25,7 @@ public class MappedReader {
 
     private void map(long offset) {
         try {
-            buf = fc.map(FileChannel.MapMode.READ_WRITE, offset, fc.size());
+            buf = fc.map(FileChannel.MapMode.READ_ONLY, offset, fc.size());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -37,7 +37,7 @@ public class MappedReader {
         byte[] msg = new byte[msgLen];
         buf.get(msg, 0, msgLen);
         //for test
-//        System.out.println("msg: " + new String(msg));
+        System.out.println("### msg: " + new String(msg));
         char tail = buf.getChar();
         if (tail != '$') return null;
         else return parseMessage(new String(msg));
