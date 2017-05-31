@@ -37,7 +37,7 @@ public class MappedReader {
         byte[] msg = new byte[msgLen];
         buf.get(msg, 0, msgLen);
         //for test
-        System.out.println("### msg: " + new String(msg));
+//        System.out.println("### msg: " + new String(msg));
         char tail = buf.getChar();
         if (tail != '$') return null;
         else return parseMessage(new String(msg));
