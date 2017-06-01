@@ -51,11 +51,11 @@ public class DefaultPullConsumer implements PullConsumer {
         }
         queue = queueName;
         //for test
-//        String str = "";
-//        for (String topic : topics) {
-//            str += topic + ",";
-//        }
-//        System.out.println(this.toString() + " attachQueue: " + queueName + " topics: [" + str + "]");
+        String str = "";
+        for (String topic : topics) {
+            str += topic + ",";
+        }
+        System.out.println(this.toString() + " attachQueue: " + queueName + " topics: [" + str + "]");
         messageFetch.attachQueue(queueName, topics);
     }
 

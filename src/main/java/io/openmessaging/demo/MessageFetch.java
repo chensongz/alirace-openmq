@@ -76,7 +76,7 @@ public class MessageFetch {
                     }
                 }
                 if (num < readCount) {
-                    currentReader.close();
+//                    currentReader.close();
                     String nonConsumeFileName = nonConsumeFiles.poll();
                     if (nonConsumeFileName != null) {
                         readFile(storePath + "/" + nonConsumeFileName);

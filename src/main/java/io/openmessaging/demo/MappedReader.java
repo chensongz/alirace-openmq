@@ -113,12 +113,22 @@ public class MappedReader {
                     buf.get();
                     break;
                 case MessageFlag.QUEUE:
-                    message.putHeaders(MessageHeader.QUEUE, readString(MessageFlag.VALUE_END));
-//                    setStringHead(MessageHeader.QUEUE, message);
+                    if (buf.get() == MessageFlag.QUEUE_PREFIX) {
+                        message.putHeaders(MessageHeader.QUEUE, MessageFlag.QUEUE_STR_PREFIX + readString(MessageFlag.VALUE_END));
+                    } else {
+                        System.out.println("not in QUEUE_PREFIX");
+                        buf.position(buf.position() - 1);
+                        setStringHead(MessageHeader.QUEUE, message);
+                    }
                     break;
                 case MessageFlag.TOPIC:
-                    message.putHeaders(MessageHeader.TOPIC, readString(MessageFlag.VALUE_END));
-//                    setStringHead(MessageHeader.TOPIC, message);
+                    if (buf.get() == MessageFlag.TOPIC_PREFIX) {
+                        message.putHeaders(MessageHeader.TOPIC, MessageFlag.TOPIC_STR_PREFIX + readString(MessageFlag.VALUE_END));
+                    } else {
+                        System.out.println("not in TOPIC_PREFIX");
+                        buf.position(buf.position() - 1);
+                        setStringHead(MessageHeader.TOPIC, message);
+                    }
                     break;
                 case MessageFlag.MESSAGE_ID:
                     setStringHead(MessageHeader.MESSAGE_ID, message);
@@ -162,8 +172,13 @@ public class MappedReader {
         while ((curr = buf.get()) != MessageFlag.MESSAGE_END) {
             switch (curr) {
                 case MessageFlag.PRO_OFFSET:
-                    message.putProperties("PRO_OFFSET", readString(MessageFlag.VALUE_END));
-//                    setStringProp("PRO_OFFSET", message);
+                    if (buf.get() == MessageFlag.PRODUCER_PREFIX) {
+                        message.putProperties("PRO_OFFSET", MessageFlag.PRODUCER_STR_PREFIX + readString(MessageFlag.VALUE_END));
+                    } else {
+                        System.out.println("not in PRODUCER_PREFIX");
+                        buf.position(buf.position() - 1);
+                        setStringProp("PRO_OFFSET", message);
+                    }
                     break;
                 default:
                     buf.position(buf.position() - 1);

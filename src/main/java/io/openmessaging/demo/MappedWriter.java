@@ -65,20 +65,31 @@ public class MappedWriter {
 
     private void putHeaders(KeyValue headers) {
         for (String key : headers.keySet()) {
+            String value = headers.getString(key);
             switch (key) {
                 case MessageHeader.MESSAGE_ID:
                     buf.put(MessageFlag.MESSAGE_ID);
-                    buf.put(headers.getString(key).getBytes());
+                    buf.put(value.getBytes());
                     buf.put(MessageFlag.VALUE_END);
                     break;
                 case MessageHeader.TOPIC:
                     buf.put(MessageFlag.TOPIC);
-                    buf.put(headers.getString(key).getBytes());
+                    if (value.startsWith(MessageFlag.TOPIC_STR_PREFIX)) {
+                        buf.put(MessageFlag.TOPIC_PREFIX);
+                        buf.put(value.substring(6).getBytes());
+                    } else {
+                        buf.put(value.getBytes());
+                    }
                     buf.put(MessageFlag.VALUE_END);
                     break;
                 case MessageHeader.QUEUE:
                     buf.put(MessageFlag.QUEUE);
-                    buf.put(headers.getString(key).getBytes());
+                    if (value.startsWith(MessageFlag.QUEUE_STR_PREFIX)) {
+                        buf.put(MessageFlag.QUEUE_PREFIX);
+                        buf.put(value.substring(6).getBytes());
+                    } else {
+                        buf.put(value.getBytes());
+                    }
                     buf.put(MessageFlag.VALUE_END);
                     break;
                 case MessageHeader.BORN_TIMESTAMP:
@@ -108,42 +119,42 @@ public class MappedWriter {
                     break;
                 case MessageHeader.BORN_HOST:
                     buf.put(MessageFlag.BORN_HOST);
-                    buf.put(headers.getString(key).getBytes());
+                    buf.put(value.getBytes());
                     buf.put(MessageFlag.VALUE_END);
                     break;
                 case MessageHeader.PRIORITY:
                     buf.put(MessageFlag.PRIORITY);
-                    buf.put(headers.getString(key).getBytes());
+                    buf.put(value.getBytes());
                     buf.put(MessageFlag.VALUE_END);
                     break;
                 case MessageHeader.RELIABILITY:
                     buf.put(MessageFlag.RELIABILITY);
-                    buf.put(headers.getString(key).getBytes());
+                    buf.put(value.getBytes());
                     buf.put(MessageFlag.VALUE_END);
                     break;
                 case MessageHeader.SCHEDULE_EXPRESSION:
                     buf.put(MessageFlag.SCHEDULE_EXPRESSION);
-                    buf.put(headers.getString(key).getBytes());
+                    buf.put(value.getBytes());
                     buf.put(MessageFlag.VALUE_END);
                     break;
                 case MessageHeader.SEARCH_KEY:
                     buf.put(MessageFlag.SEARCH_KEY);
-                    buf.put(headers.getString(key).getBytes());
+                    buf.put(value.getBytes());
                     buf.put(MessageFlag.VALUE_END);
                     break;
                 case MessageHeader.SHARDING_KEY:
                     buf.put(MessageFlag.SHARDING_KEY);
-                    buf.put(headers.getString(key).getBytes());
+                    buf.put(value.getBytes());
                     buf.put(MessageFlag.VALUE_END);
                     break;
                 case MessageHeader.STORE_HOST:
                     buf.put(MessageFlag.STORE_HOST);
-                    buf.put(headers.getString(key).getBytes());
+                    buf.put(value.getBytes());
                     buf.put(MessageFlag.VALUE_END);
                     break;
                 case MessageHeader.TRACE_ID:
                     buf.put(MessageFlag.TRACE_ID);
-                    buf.put(headers.getString(key).getBytes());
+                    buf.put(value.getBytes());
                     buf.put(MessageFlag.VALUE_END);
                     break;
                 default:
@@ -158,7 +169,14 @@ public class MappedWriter {
             switch (key) {
                 case "PRO_OFFSET":
                     buf.put(MessageFlag.PRO_OFFSET);
-                    buf.put(properties.getString(key).getBytes());
+                    String value = properties.getString(key);
+                    if (value.startsWith(MessageFlag.PRODUCER_STR_PREFIX)) {
+                        buf.put(MessageFlag.PRODUCER_PREFIX);
+                        buf.put(value.substring(8).getBytes());
+                    } else {
+                        buf.put(value.getBytes());
+                    }
+
                     buf.put(MessageFlag.VALUE_END);
                     break;
                 default:
