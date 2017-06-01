@@ -16,12 +16,12 @@ public class DefaultPullConsumer implements PullConsumer {
     public DefaultPullConsumer(KeyValue properties) {
         this.properties = properties;
         String storePath = properties.getString("STORE_PATH");
-        String[] filenames = new File(storePath).list();
-        LinkedList<String> str = new LinkedList<>();
-        for (String file:filenames) {
-            str.add(file);
-        }
-        System.out.println("new files:" + str);
+//        String[] filenames = new File(storePath).list();
+//        LinkedList<String> str = new LinkedList<>();
+//        for (String file:filenames) {
+//            str.add(file);
+//        }
+//        System.out.println("new files:" + str);
         messageFetch = new MessageFetch(storePath);
     }
 
@@ -34,7 +34,7 @@ public class DefaultPullConsumer implements PullConsumer {
 
     @Override
     public Message poll() {
-        System.out.println("### consumer poll ###");
+//        System.out.println("### consumer poll ###");
         return messageFetch.pullMessage();
     }
 
@@ -60,11 +60,11 @@ public class DefaultPullConsumer implements PullConsumer {
         }
         queue = queueName;
         //for test
-        String str = "";
-        for (String topic : topics) {
-            str += topic + ",";
-        }
-        System.out.println(this.toString() + " attachQueue: " + queueName + " topics: [" + str + "]");
+//        String str = "";
+//        for (String topic : topics) {
+//            str += topic + ",";
+//        }
+//        System.out.println(this.toString() + " attachQueue: " + queueName + " topics: [" + str + "]");
         messageFetch.attachQueue(queueName, topics);
     }
 

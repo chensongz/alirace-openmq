@@ -33,8 +33,8 @@ public class MessageFetch {
                     break;
                 }
             }
-            System.out.println("messageQueue :" + messageQueue);
-            System.out.println("reader:" + reader.toString());
+//            System.out.println("messageQueue :" + messageQueue);
+//            System.out.println("reader:" + reader.toString());
             currentReader = reader;
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,21 +54,23 @@ public class MessageFetch {
     }
 
     public void attachQueue(String queueName, Collection<String> topics) {
-        File dir = new File(storePath);
-        String[] files = dir.list();
-        LinkedList<String> topicsAndQueue = new LinkedList<>();
-        topicsAndQueue.add(queueName);
-        topicsAndQueue.addAll(topics);
-        filteredFilenames(files, topicsAndQueue);
-
-        String starter = nonConsumeFiles.poll();
-        readFile(storePath + "/" + starter);
-        System.out.println("starter:" + storePath + "/" + starter);
+//        File dir = new File(storePath);
+//        String[] files = dir.list();
+//        LinkedList<String> topicsAndQueue = new LinkedList<>();
+//        topicsAndQueue.add(queueName);
+//        topicsAndQueue.addAll(topics);
+//        filteredFilenames(files, topicsAndQueue);
+//
+//        String starter = nonConsumeFiles.poll();
+//        readFile(storePath + "/" + starter);
+//        System.out.println("starter:" + storePath + "/" + starter);
+        readFile(storePath + "/" + queueName);
+        nonConsumeFiles.addAll(topics);
     }
 
     public Message pullMessage() {
         Message message = messageQueue.poll();
-        System.out.println("message1:" + message);
+//        System.out.println("message1:" + message);
         if (message == null) {
             try {
                 Message row;
@@ -82,7 +84,7 @@ public class MessageFetch {
                 }
                 if (num < readCount) {
 //                    currentReader.close();
-                    System.out.println("message num:" + num);
+//                    System.out.println("message num:" + num);
                     String nonConsumeFileName = nonConsumeFiles.poll();
                     if (nonConsumeFileName != null) {
                         readFile(storePath + "/" + nonConsumeFileName);
@@ -95,11 +97,11 @@ public class MessageFetch {
                 e.printStackTrace();
             }
         }
-        System.out.println("message2:" + message);
-        System.out.println("message3:" + message.headers().keySet() +
-                ":" + ((DefaultKeyValue)message.headers()).values()+ "|"
-                + new String(((BytesMessage)message).getBody()) + "|"  + message.properties().keySet() + ":"
-                + ((DefaultKeyValue)message.properties()).values());
+//        System.out.println("message2:" + message);
+//        System.out.println("message3:" + message.headers().keySet() +
+//                ":" + ((DefaultKeyValue)message.headers()).values()+ "|"
+//                + new String(((BytesMessage)message).getBody()) + "|"  + message.properties().keySet() + ":"
+//                + ((DefaultKeyValue)message.properties()).values());
 
         return message;
     }

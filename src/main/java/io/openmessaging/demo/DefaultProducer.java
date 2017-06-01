@@ -14,17 +14,12 @@ public class DefaultProducer implements Producer {
 
     private String storePath;
     private Map<String, MappedWriter> bufferHashMap = new HashMap<>(1024);
+    private MessageStore messageStore = MessageStore.getInstance();
 
 
     public DefaultProducer(KeyValue properties) {
         this.properties = properties;
         storePath = properties.getString("STORE_PATH");
-        String[] filenames = new File(storePath).list();
-        LinkedList<String> str = new LinkedList<>();
-        for (String file:filenames) {
-            str.add(file);
-        }
-        System.out.println("old files:" + str);
     }
 
 
@@ -65,19 +60,19 @@ public class DefaultProducer implements Producer {
 
         MappedWriter mw;
 
-        if(!bufferHashMap.containsKey(bucket)) {
-            mw = new MappedWriter(storePath + "/" + bucket + "_" + this.toString().split("@")[1]);
-            bufferHashMap.put(bucket, mw);
-        }else{
-            mw = bufferHashMap.get(bucket);
-        }
-
-//        if (!bufferHashMap.containsKey(bucket)) {
-//            mw = messageStore.getMappedWriter(storePath, bucket);
+//        if(!bufferHashMap.containsKey(bucket)) {
+//            mw = new MappedWriter(storePath + "/" + bucket + "_" + this.toString().split("@")[1]);
 //            bufferHashMap.put(bucket, mw);
-//        } else {
+//        }else{
 //            mw = bufferHashMap.get(bucket);
 //        }
+
+        if (!bufferHashMap.containsKey(bucket)) {
+            mw = messageStore.getMappedWriter(storePath, bucket);
+            bufferHashMap.put(bucket, mw);
+        } else {
+            mw = bufferHashMap.get(bucket);
+        }
 
         mw.send((BytesMessage) message);
     }
