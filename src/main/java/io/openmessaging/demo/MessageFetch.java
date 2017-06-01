@@ -97,7 +97,10 @@ public class MessageFetch {
             }
         }
         System.out.println("message2:" + message);
-        System.out.println("message3:" + (BytesMessage)message.headers() + ":" + new String(((BytesMessage)message).getBody()) + ":"  + message.properties());
+        System.out.println("message3:" + message.headers().keySet() +
+                ":" + ((DefaultKeyValue)message.headers()).values()+ "|"
+                + new String(((BytesMessage)message).getBody()) + "|"  + message.properties().keySet() + ":"
+                + ((DefaultKeyValue)message.properties()).values());
 
         return message;
     }

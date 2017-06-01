@@ -1,6 +1,8 @@
 package io.openmessaging.demo;
 
 import io.openmessaging.KeyValue;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -55,6 +57,10 @@ public class DefaultKeyValue implements KeyValue {
     @Override
     public Set<String> keySet() {
         return kvs.keySet();
+    }
+
+    public Collection<Object> values(){
+        return kvs.values();
     }
 
     @Override
