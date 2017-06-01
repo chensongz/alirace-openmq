@@ -1,6 +1,5 @@
 package io.openmessaging.demo;
 
-
 import io.openmessaging.Message;
 import io.openmessaging.MessageHeader;
 
@@ -12,11 +11,11 @@ import java.util.List;
 
 public class MappedReader {
 
-    private final int INI  = 0;
+    private final int INI = 0;
     private final int BODY = 1;
     private final int HEAD = 2;
     private final int PROP = 3;
-    private final int END  = 4;
+    private final int END = 4;
 
     private FileChannel fc;
     private MappedByteBuffer buf;
@@ -42,45 +41,57 @@ public class MappedReader {
         }
     }
 
-    private Message setBody(){
+    public Message poll() {
+        state = INI;
+        byte curr;
+        Message message = null;
+        while (state != END) {
+            if (state == INI) {
+                curr = buf.get();
+                if (curr == MessageFlag.MESSAGE_START) {
+                    state = BODY;
+                } else {
+                    return null;
+                }
+            } else if (state == BODY) {
+                message = setBody();
+            } else if (state == HEAD) {
+                setHead(message);
+            } else if (state == PROP) {
+                setPROP(message);
+            } else if (state == END) {
+                break;
+            }
+        }
+        return message;
+    }
+
+    public void close() {
+        try {
+            fc.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Message setBody() {
         byte curr;
         List<Byte> bodyArray = new ArrayList<>();
-        while((curr = buf.get()) != MessageFlag.FIELD_END){
+        while ((curr = buf.get()) != MessageFlag.FIELD_END) {
             bodyArray.add(curr);
         }
         state = HEAD;
         byte[] body = new byte[bodyArray.size()];
-        for(int i = 0; i < bodyArray.size(); i++){
+        for (int i = 0; i < bodyArray.size(); i++) {
             body[i] = bodyArray.get(i);
         }
         return new DefaultBytesMessage(body);
     }
 
-    private String readString(byte end){
-        byte t;
-        List<Byte> v = new ArrayList<>();
-        while((t = buf.get()) != end){
-            v.add(t);
-        }
-        byte[] value = new byte[v.size()];
-        for(int i = 0; i < v.size(); i++){
-            value[i] = v.get(i);
-        }
-        return new String(value);
-    }
-
-    private void setStringHead(String key, Message message){
-        message.putHeaders(key, readString(MessageFlag.VALUE_END));
-    }
-
-    private void setStringProp(String key, Message message){
-        message.putProperties(key, readString(MessageFlag.VALUE_END));
-    }
-
-    private void setHead(Message message){
+    private void setHead(Message message) {
         byte curr;
-        while((curr = buf.get()) != MessageFlag.FIELD_END){
-            switch (curr){
+        while ((curr = buf.get()) != MessageFlag.FIELD_END) {
+            switch (curr) {
                 case MessageFlag.BORN_TIMESTAMP:
                     message.putHeaders(MessageHeader.BORN_TIMESTAMP, buf.getLong());
                     buf.get();
@@ -141,53 +152,44 @@ public class MappedReader {
                     break;
             }
         }
+        state = PROP;
     }
 
-    private void setPROP(Message message){
+    private void setPROP(Message message) {
         byte curr;
-        while((curr = buf.get()) != MessageFlag.FIELD_END){
-            switch(curr){
+        while ((curr = buf.get()) != MessageFlag.MESSAGE_END) {
+            switch (curr) {
                 case MessageFlag.PRO_OFFSET:
                     setStringProp("PRO_OFFSET", message);
                     break;
                 default:
+                    buf.position(buf.position() - 1);
                     String key = readString(MessageFlag.KEY_END);
                     setStringProp(key, message);
                     break;
             }
         }
+        state = END;
     }
 
-    public Message poll() {
-        int state = INI;
-        byte curr;
-        Message message = null;
-        while(state != END){
-            if(state == INI){
-                curr = buf.get();
-                if(curr == MessageFlag.MESSAGE_START){
-                    state = BODY;
-                }else{
-                    return null;
-                }
-            }else if(state == BODY){
-                message = setBody();
-            }else if(state == HEAD){
-                setHead(message);
-            }else if(state == PROP){
-                setPROP(message);
-            }else if(state == END){
-                break;
-            }
+    private String readString(byte end) {
+        byte t;
+        List<Byte> v = new ArrayList<>();
+        while ((t = buf.get()) != end) {
+            v.add(t);
         }
-        return message;
+        byte[] value = new byte[v.size()];
+        for (int i = 0; i < v.size(); i++) {
+            value[i] = v.get(i);
+        }
+        return new String(value);
     }
 
-    public void close() {
-        try {
-            fc.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void setStringHead(String key, Message message) {
+        message.putHeaders(key, readString(MessageFlag.VALUE_END));
+    }
+
+    private void setStringProp(String key, Message message) {
+        message.putProperties(key, readString(MessageFlag.VALUE_END));
     }
 }
