@@ -17,8 +17,6 @@ public class MappedWriter {
     private MappedByteBuffer buf;
     private long offset; //write offset in the whole file
 
-    private final Object lock = new Object();
-
     public MappedWriter(String filename) {
         try {
             fc = new RandomAccessFile(filename, "rw").getChannel();
@@ -51,28 +49,6 @@ public class MappedWriter {
         buf.put(MessageFlag.FIELD_END);
         putProperties(message.properties());
         buf.put(MessageFlag.MESSAGE_END);
-
-//        byte[] msg = message.toString().getBytes();
-//        int msgLen = msg.length;
-//        int totLen = 4 + 2 + msgLen;
-//        //for test
-////        System.out.println("### msgLen: " + msgLen);
-//
-//        synchronized (lock) {
-//            if (totLen > buf.remaining()) {
-//                offset += buf.position();
-//                map(offset);
-//                //for test
-////                System.out.printf("############## remaped offset %s ################", offset);
-//            }
-//            buf.putInt(msgLen);
-//            buf.put(msg);
-//            buf.putChar('$');
-//            //for test
-////            System.out.println("### fc info: " + fc.toString());
-////            System.out.println("### buf info: " + buf.toString());
-//    }
-
     }
 
     public void close() {

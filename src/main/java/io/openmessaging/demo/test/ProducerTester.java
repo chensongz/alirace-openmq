@@ -58,7 +58,14 @@ public class ProducerTester {
                     queueOrTopic = TOPICS.get(index);
 
 //                    System.out.println(label + "_" + offsets.get(queueOrTopic));
-                    DefaultBytesMessage message = (DefaultBytesMessage) producer.createBytesMessageToQueue(queueOrTopic, (label + "_" + offsets.get(queueOrTopic)).getBytes());
+                    DefaultBytesMessage message;
+                    if (index < Constants.QUEUE_NUM) {
+                        message = (DefaultBytesMessage) producer.createBytesMessageToQueue(queueOrTopic, (label + "_" + offsets.get(queueOrTopic)).getBytes());
+
+                    } else {
+                        message = (DefaultBytesMessage) producer.createBytesMessageToTopic(queueOrTopic, (label + "_" + offsets.get(queueOrTopic)).getBytes());
+
+                    }
                     message.putHeaders("MessageId", "asd");
 
                     message.putProperties("inject_jig", "sdd");
@@ -95,8 +102,8 @@ public class ProducerTester {
         }
         long end = System.currentTimeMillis();
         System.out.println("end................");
-        System.out.println(String.format("Mark Produce Finished, Cost %d ms, sendNum %d", end - start,Constants.PRO_MAX * 10));
-        System.out.println(String.format("Cost %d q/ms", Constants.PRO_MAX * 10/(end - start)));
+        System.out.println(String.format("Mark Produce Finished, Cost %d ms, sendNum %d", end - start, Constants.PRO_MAX));
+        System.out.println(String.format("Cost %d q/ms", Constants.PRO_MAX / (end - start)));
         System.exit(0);
     }
 }

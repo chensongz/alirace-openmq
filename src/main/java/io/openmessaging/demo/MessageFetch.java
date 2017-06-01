@@ -2,10 +2,7 @@ package io.openmessaging.demo;
 
 import io.openmessaging.Message;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -38,12 +35,29 @@ public class MessageFetch {
             currentReader = reader;
         } catch (Exception e) {
             e.printStackTrace();
+
+        }
+    }
+
+    private void filteredFilenames(String[] filenames, Collection<String> prefixes) {
+        for(String filename: filenames){
+            for(String prefix: prefixes){
+                if(filename.startsWith(prefix)){
+                    nonConsumeFiles.add(filename);
+                    break;
+                }
+            }
         }
     }
 
     public void attachQueue(String queueName, Collection<String> topics) {
-        readFile(storePath + "/" + queueName);
-        nonConsumeFiles.addAll(topics);
+        File dir = new File(storePath);
+        String[] files = dir.list();
+        topics.add(queueName);
+        filteredFilenames(files, topics);
+
+        String starter = nonConsumeFiles.poll();
+        readFile(storePath + "/" + starter);
     }
 
     public Message pullMessage() {
@@ -60,7 +74,7 @@ public class MessageFetch {
                     }
                 }
                 if (num < readCount) {
-//                    currentReader.close();
+                    currentReader.close();
                     String nonConsumeFileName = nonConsumeFiles.poll();
                     if (nonConsumeFileName != null) {
                         readFile(storePath + "/" + nonConsumeFileName);

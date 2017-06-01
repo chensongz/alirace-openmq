@@ -7,14 +7,11 @@ import java.util.Map;
 
 public class DefaultProducer implements Producer {
     private MessageFactory messageFactory = new DefaultMessageFactory();
-    private MessageStore messageStore = MessageStore.getInstance();
 
     private KeyValue properties;
 
     private String storePath;
-    //    private Map<String, PrintWriter> printWriterHashMap = new HashMap<>(1024);
     private Map<String, MappedWriter> bufferHashMap = new HashMap<>(1024);
-//    private Set<String> buckets = new HashSet<>(1024);
 
 
     public DefaultProducer(KeyValue properties) {
@@ -60,12 +57,20 @@ public class DefaultProducer implements Producer {
 
         MappedWriter mw;
 
-        if (!bufferHashMap.containsKey(bucket)) {
-            mw = messageStore.getMappedWriter(storePath, bucket);
+        if(!bufferHashMap.containsKey(bucket)) {
+            mw = new MappedWriter(storePath + "/" + bucket + "_" + this.toString().split("@")[1]);
             bufferHashMap.put(bucket, mw);
-        } else {
+        }else{
             mw = bufferHashMap.get(bucket);
         }
+
+//        if (!bufferHashMap.containsKey(bucket)) {
+//            mw = messageStore.getMappedWriter(storePath, bucket);
+//            bufferHashMap.put(bucket, mw);
+//        } else {
+//            mw = bufferHashMap.get(bucket);
+//        }
+
         mw.send((BytesMessage) message);
     }
 
