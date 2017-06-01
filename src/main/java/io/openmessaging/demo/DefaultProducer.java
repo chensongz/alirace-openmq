@@ -3,7 +3,9 @@ package io.openmessaging.demo;
 import io.openmessaging.*;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.io.*;
 
 public class DefaultProducer implements Producer {
     private MessageFactory messageFactory = new DefaultMessageFactory();
@@ -17,6 +19,12 @@ public class DefaultProducer implements Producer {
     public DefaultProducer(KeyValue properties) {
         this.properties = properties;
         storePath = properties.getString("STORE_PATH");
+        String[] filenames = new File(storePath).list();
+        LinkedList<String> str = new LinkedList<>();
+        for (String file:filenames) {
+            str.add(file);
+        }
+        System.out.println("old files:" + str);
     }
 
 

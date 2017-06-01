@@ -67,7 +67,7 @@ public class MessageFetch {
 
     public Message pullMessage() {
         Message message = messageQueue.poll();
-        System.out.println("message:" + message);
+        System.out.println("message1:" + message);
         if (message == null) {
             try {
                 Message row;
@@ -93,6 +93,7 @@ public class MessageFetch {
                 e.printStackTrace();
             }
         }
+        System.out.println("message2:" + message);
         return message;
     }
 

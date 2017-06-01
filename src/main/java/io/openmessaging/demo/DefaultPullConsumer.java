@@ -4,7 +4,9 @@ import io.openmessaging.KeyValue;
 import io.openmessaging.Message;
 import io.openmessaging.PullConsumer;
 
+import java.io.File;
 import java.util.Collection;
+import java.util.LinkedList;
 
 public class DefaultPullConsumer implements PullConsumer {
     private MessageFetch messageFetch;
@@ -14,6 +16,12 @@ public class DefaultPullConsumer implements PullConsumer {
     public DefaultPullConsumer(KeyValue properties) {
         this.properties = properties;
         String storePath = properties.getString("STORE_PATH");
+        String[] filenames = new File(storePath).list();
+        LinkedList<String> str = new LinkedList<>();
+        for (String file:filenames) {
+            str.add(file);
+        }
+        System.out.println("new files:" + str);
         messageFetch = new MessageFetch(storePath);
     }
 
