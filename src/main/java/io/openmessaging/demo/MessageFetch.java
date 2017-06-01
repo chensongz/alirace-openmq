@@ -53,8 +53,10 @@ public class MessageFetch {
     public void attachQueue(String queueName, Collection<String> topics) {
         File dir = new File(storePath);
         String[] files = dir.list();
-        topics.add(queueName);
-        filteredFilenames(files, topics);
+        LinkedList<String> topicsAndQueue = new LinkedList<>();
+        topicsAndQueue.add(queueName);
+        topicsAndQueue.addAll(topics);
+        filteredFilenames(files, topicsAndQueue);
 
         String starter = nonConsumeFiles.poll();
         readFile(storePath + "/" + starter);

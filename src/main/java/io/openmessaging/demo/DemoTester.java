@@ -29,10 +29,10 @@ public class DemoTester {
         Producer producer = new DefaultProducer(properties);
 
         //构造测试数据
-        String topic1 = "TOPIC1"; //实际测试时大概会有100个Topic左右
-        String topic2 = "TOPIC2"; //实际测试时大概会有100个Topic左右
-        String queue1 = "QUEUE1"; //实际测试时，queue数目与消费线程数目相同
-        String queue2 = "QUEUE2"; //实际测试时，queue数目与消费线程数目相同
+        String topic1 = "TOPIC_1"; //实际测试时大概会有100个Topic左右
+        String topic2 = "TOPIC_2"; //实际测试时大概会有100个Topic左右
+        String queue1 = "QUEUE_1"; //实际测试时，queue数目与消费线程数目相同
+        String queue2 = "QUEUE_2"; //实际测试时，queue数目与消费线程数目相同
         List<Message> messagesForTopic1 = new ArrayList<>(BUCKET_MESSAGE_COUNT);
         List<Message> messagesForTopic2 = new ArrayList<>(BUCKET_MESSAGE_COUNT);
         List<Message> messagesForQueue1 = new ArrayList<>(BUCKET_MESSAGE_COUNT);
