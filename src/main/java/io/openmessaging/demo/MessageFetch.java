@@ -1,5 +1,6 @@
 package io.openmessaging.demo;
 
+import io.openmessaging.BytesMessage;
 import io.openmessaging.Message;
 
 import java.io.File;
@@ -32,7 +33,7 @@ public class MessageFetch {
                     break;
                 }
             }
-            System.out.println("messageQueue:" + messageQueue);
+            System.out.println("messageQueue num:" + messageQueue.size());
             System.out.println("reader:" + reader.toString());
             currentReader = reader;
         } catch (Exception e) {
@@ -96,6 +97,8 @@ public class MessageFetch {
             }
         }
         System.out.println("message2:" + message);
+        System.out.println("message3:" + (BytesMessage)message.headers() + ":" + new String(((BytesMessage)message).getBody()) + ":"  + message.properties());
+
         return message;
     }
 
