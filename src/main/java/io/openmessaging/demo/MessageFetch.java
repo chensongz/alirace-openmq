@@ -33,7 +33,7 @@ public class MessageFetch {
                     break;
                 }
             }
-            System.out.println("messageQueue num:" + messageQueue.size());
+            System.out.println("messageQueue :" + messageQueue);
             System.out.println("reader:" + reader.toString());
             currentReader = reader;
         } catch (Exception e) {
@@ -64,7 +64,6 @@ public class MessageFetch {
         String starter = nonConsumeFiles.poll();
         readFile(storePath + "/" + starter);
         System.out.println("starter:" + storePath + "/" + starter);
-        System.out.println("nonConsumeFiles:" + nonConsumeFiles);
     }
 
     public Message pullMessage() {
