@@ -182,7 +182,6 @@ public class MappedWriter {
             switch (key) {
                 case "PRO_OFFSET":
                     buf.put(MessageFlag.PRO_OFFSET);
-                    buf.put(MessageFlag.KEY_END);
                     buf.put(properties.getString(key).getBytes());
                     buf.put(MessageFlag.VALUE_END);
                     break;

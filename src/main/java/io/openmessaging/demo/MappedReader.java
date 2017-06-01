@@ -7,9 +7,7 @@ import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MappedReader {
 
@@ -60,7 +58,7 @@ public class MappedReader {
             } else if (state == HEAD) {
                 setHead(message);
             } else if (state == PROP) {
-                setPROP(message);
+                setProp(message);
             } else if (state == END) {
                 break;
             }
@@ -157,7 +155,7 @@ public class MappedReader {
         state = PROP;
     }
 
-    private void setPROP(Message message) {
+    private void setProp(Message message) {
         byte curr;
         while ((curr = buf.get()) != MessageFlag.MESSAGE_END) {
             switch (curr) {
@@ -194,29 +192,4 @@ public class MappedReader {
     private void setStringProp(String key, Message message) {
         message.putProperties(key, readString(MessageFlag.VALUE_END));
     }
-
-    private Message parseMessage(String row) {
-        String[] splitRow = row.split("\\|");
-        String propertiesString = splitRow[0];
-        String headersString = splitRow[1];
-        String body = splitRow[2];
-        Message message = new DefaultBytesMessage(body.getBytes());
-        if (!propertiesString.equals("")) {
-            String[] properties = propertiesString.split("\t");
-            for (String kvStr : properties) {
-                String[] kv = kvStr.split(":");
-                message.putProperties(kv[0], kv[1]);
-            }
-        }
-        if (!headersString.equals("")) {
-            String[] headers = headersString.split("\t");
-            for (String kvStr : headers) {
-                String[] kv = kvStr.split(":");
-                message.putHeaders(kv[0], kv[1]);
-            }
-        }
-
-        return message;
-    }
-
 }
