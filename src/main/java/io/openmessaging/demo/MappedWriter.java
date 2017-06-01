@@ -97,12 +97,12 @@ public class MappedWriter {
                     break;
                 case MessageHeader.TOPIC:
                     buf.put(MessageFlag.TOPIC);
-                    buf.put(headers.getString(key).getBytes());
+                    buf.put(headers.getString(key).substring(6).getBytes());
                     buf.put(MessageFlag.VALUE_END);
                     break;
                 case MessageHeader.QUEUE:
                     buf.put(MessageFlag.QUEUE);
-                    buf.put(headers.getString(key).getBytes());
+                    buf.put(headers.getString(key).substring(6).getBytes());
                     buf.put(MessageFlag.VALUE_END);
                     break;
                 case MessageHeader.BORN_TIMESTAMP:
@@ -182,7 +182,7 @@ public class MappedWriter {
             switch (key) {
                 case "PRO_OFFSET":
                     buf.put(MessageFlag.PRO_OFFSET);
-                    buf.put(properties.getString(key).getBytes());
+                    buf.put(properties.getString(key).substring(8).getBytes());
                     buf.put(MessageFlag.VALUE_END);
                     break;
                 default:
