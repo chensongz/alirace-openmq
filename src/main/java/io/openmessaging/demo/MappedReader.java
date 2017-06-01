@@ -8,9 +8,7 @@ import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MappedReader {
 
@@ -192,30 +190,4 @@ public class MappedReader {
             e.printStackTrace();
         }
     }
-
-    private Message parseMessage(String row) {
-        String[] splitRow = row.split("\\|");
-        String propertiesString = splitRow[0];
-        String headersString = splitRow[1];
-        String body = splitRow[2];
-        Message message = new DefaultBytesMessage(body.getBytes());
-        if (!propertiesString.equals("")) {
-            String[] properties = propertiesString.split("\t");
-            for (String kvStr : properties) {
-                String[] kv = kvStr.split(":");
-                message.putProperties(kv[0], kv[1]);
-            }
-        }
-        if (!headersString.equals("")) {
-            String[] headers = headersString.split("\t");
-            for (String kvStr : headers) {
-                String[] kv = kvStr.split(":");
-                message.putHeaders(kv[0], kv[1]);
-            }
-        }
-
-        return message;
-    }
-
-
 }
