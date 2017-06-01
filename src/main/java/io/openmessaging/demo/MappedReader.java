@@ -113,11 +113,11 @@ public class MappedReader {
                     buf.get();
                     break;
                 case MessageFlag.QUEUE:
-                    message.putHeaders(MessageHeader.QUEUE, MessageFlag.QUEUE_STR_PREFIX + readString(MessageFlag.VALUE_END));
+                    message.putHeaders(MessageHeader.QUEUE, readString(MessageFlag.VALUE_END));
 //                    setStringHead(MessageHeader.QUEUE, message);
                     break;
                 case MessageFlag.TOPIC:
-                    message.putHeaders(MessageHeader.TOPIC, MessageFlag.TOPIC_STR_PREFIX + readString(MessageFlag.VALUE_END));
+                    message.putHeaders(MessageHeader.TOPIC, readString(MessageFlag.VALUE_END));
 //                    setStringHead(MessageHeader.TOPIC, message);
                     break;
                 case MessageFlag.MESSAGE_ID:
@@ -162,7 +162,7 @@ public class MappedReader {
         while ((curr = buf.get()) != MessageFlag.MESSAGE_END) {
             switch (curr) {
                 case MessageFlag.PRO_OFFSET:
-                    message.putProperties("PRO_OFFSET", MessageFlag.PRODUCER_STR_PREFIX + readString(MessageFlag.VALUE_END));
+                    message.putProperties("PRO_OFFSET", readString(MessageFlag.VALUE_END));
 //                    setStringProp("PRO_OFFSET", message);
                     break;
                 default:

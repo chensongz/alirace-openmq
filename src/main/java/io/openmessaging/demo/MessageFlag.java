@@ -3,11 +3,11 @@ package io.openmessaging.demo;
 public class MessageFlag {
 
     //Delimiter
-    public static final byte MESSAGE_START = -1; //^
-    public static final byte MESSAGE_END = -2; //$
-    public static final byte KEY_END = -3; //:
-    public static final byte VALUE_END = -4; //;
-    public static final byte FIELD_END = -5; //|
+    public static final byte MESSAGE_START = '^'; //^
+    public static final byte MESSAGE_END = '$'; //$
+    public static final byte KEY_END = ':'; //:
+    public static final byte VALUE_END = ';'; //;
+    public static final byte FIELD_END = '|'; //|
 
     //Headers Key
     public static final byte QUEUE = 1;
