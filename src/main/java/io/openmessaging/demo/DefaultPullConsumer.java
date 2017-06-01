@@ -26,6 +26,7 @@ public class DefaultPullConsumer implements PullConsumer {
 
     @Override
     public Message poll() {
+        System.out.println("### consumer poll ###");
         return messageFetch.pullMessage();
     }
 

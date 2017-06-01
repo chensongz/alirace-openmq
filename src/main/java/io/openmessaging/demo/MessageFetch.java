@@ -13,7 +13,7 @@ public class MessageFetch {
     private MappedReader currentReader;
     // can modify to satisfy memory need.
     // if memory is big, readCount can be bigger, vice versa.
-    private int readCount = 1000;
+    private int readCount = 100;
 
     public MessageFetch(String storePath) {
         this.storePath = storePath;
@@ -32,6 +32,8 @@ public class MessageFetch {
                     break;
                 }
             }
+            System.out.println("messageQueue:" + messageQueue);
+            System.out.println("reader:" + reader.toString());
             currentReader = reader;
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,10 +62,12 @@ public class MessageFetch {
 
         String starter = nonConsumeFiles.poll();
         readFile(storePath + "/" + starter);
+        System.out.println("starter:" + storePath + "/" + starter);
     }
 
     public Message pullMessage() {
         Message message = messageQueue.poll();
+        System.out.println("message:" + message);
         if (message == null) {
             try {
                 Message row;
