@@ -63,6 +63,7 @@ public class MessageFetch {
         String starter = nonConsumeFiles.poll();
         readFile(storePath + "/" + starter);
         System.out.println("starter:" + storePath + "/" + starter);
+        System.out.println("nonConsumeFiles:" + nonConsumeFiles);
     }
 
     public Message pullMessage() {
@@ -81,6 +82,7 @@ public class MessageFetch {
                 }
                 if (num < readCount) {
 //                    currentReader.close();
+                    System.out.println("message num:" + num);
                     String nonConsumeFileName = nonConsumeFiles.poll();
                     if (nonConsumeFileName != null) {
                         readFile(storePath + "/" + nonConsumeFileName);
