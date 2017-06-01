@@ -68,6 +68,7 @@ public class ConsumerTester {
 
                 try {
                     BytesMessage message = (BytesMessage) consumer.poll();
+                    System.out.println(this.toString() + ": " + message.toString());
                     if (message == null) {
                         break;
                     }
@@ -87,9 +88,12 @@ public class ConsumerTester {
                     String producer = body.substring(0, index);
                     int offset = Integer.parseInt(body.substring(index + 1));
                     if(!message.headers().getString("MessageId").equals("asd")
-                            || !message.properties().getString("PRO_OFFSET").equals("PRODUCER7_84")){
+                            || !message.properties().getString("PRO_OFFSET").equals("PRODUCER7_3")){
+                        System.out.println("header: " + message.headers().getString("MessageId") + "\nprop: " + message.properties().getString("PRO_OFFSET"));
                         System.err.println("验证出错");
-                        System.exit(-1);
+//                        System.exit(-1);
+                    }else{
+                        System.out.println("验证成功");
                     }
 
 //                    if(COUNT.incrementAndGet() % 100000 == 0){
@@ -129,16 +133,19 @@ public class ConsumerTester {
 
         Random random = new Random();
         Thread[] ts = new Thread[Constants.CON_NUM];
+        System.out.println("consumer_num: " + ts.length);
         for (int i = 0; i < ts.length; i++) {
             String queue = Constants.QUEUE_PRE + i;
             List<String> topicLits = new ArrayList<>();
             Set<String> set = new HashSet<>();
-            for(int len = 0;len <9 ;len++){
-                String topic  = Constants.TOPIC_PRE+random.nextInt(5);
+            for(int len = 0;len < Constants.TOPIC_NUM ;len++){
+                String topic  = Constants.TOPIC_PRE+random.nextInt(Constants.TOPIC_NUM);
+                System.out.println(ts.toString() + " start: " + topic);
                 while(set.contains(topic)){
-                    topic  = Constants.TOPIC_PRE+random.nextInt(5);
+                    topic  = Constants.TOPIC_PRE+random.nextInt(Constants.TOPIC_NUM);
                 }
                 set.add(topic);
+                System.out.println(ts.toString() + " end: " + topic);
                 topicLits.add(topic);
             }
 
@@ -148,6 +155,7 @@ public class ConsumerTester {
         for (int i = 0; i < ts.length; i++) {
             ts[i].start();
         }
+        System.out.println("After start");
         for (int i = 0; i < ts.length; i++) {
             ts[i].join();
         }

@@ -2,7 +2,6 @@ package io.openmessaging.demo.test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.List;
 import java.util.Map;
 
@@ -39,11 +38,11 @@ public class ProducerTester {
                 e.printStackTrace();
             }
             //init offsets
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < Constants.QUEUE_NUM; i++) {
                 offsets.put("QUEUE_" + i, 0);
                 TOPICS.add("QUEUE_" + i);
             }
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < Constants.TOPIC_NUM; i++) {
                 offsets.put("TOPIC_" + i, 0);
                 TOPICS.add("TOPIC_" + i);
             }
@@ -55,7 +54,7 @@ public class ProducerTester {
             while (true) {
                 try {
                     String queueOrTopic;
-                    int index = sendNum % 5;
+                    int index = sendNum % (Constants.TOPIC_NUM + Constants.QUEUE_NUM);
                     queueOrTopic = TOPICS.get(index);
 
 //                    System.out.println(label + "_" + offsets.get(queueOrTopic));

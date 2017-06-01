@@ -58,7 +58,7 @@ public class MappedReader {
             } else if (state == HEAD) {
                 setHead(message);
             } else if (state == PROP) {
-                setPROP(message);
+                setProp(message);
             } else if (state == END) {
                 break;
             }
@@ -155,7 +155,7 @@ public class MappedReader {
         state = PROP;
     }
 
-    private void setPROP(Message message) {
+    private void setProp(Message message) {
         byte curr;
         while ((curr = buf.get()) != MessageFlag.MESSAGE_END) {
             switch (curr) {
