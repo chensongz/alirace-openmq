@@ -1,5 +1,6 @@
 package io.openmessaging.demo.test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +84,16 @@ public class ProducerTester {
     }
 
     public static void main(String[] args) throws Exception {
+        File storePathDir = new File(Constants.STORE_PATH);
+        String[] filenames = storePathDir.list();
+        if (filenames != null && filenames.length != 0) {
+            System.out.println("Remove old files...");
+            for (String filename : filenames) {
+                System.out.println("filename: " + filename);
+                (new File(storePathDir + "/" + filename)).deleteOnExit();
+            }
+        }
+
         System.out.println("start................");
         long start = System.currentTimeMillis();
         Thread[] ts = new Thread[Constants.PRO_NUM];
