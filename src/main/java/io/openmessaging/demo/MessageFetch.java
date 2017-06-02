@@ -14,7 +14,7 @@ public class MessageFetch {
     private MappedReader currentReader;
     // can modify to satisfy memory need.
     // if memory is big, readCount can be bigger, vice versa.
-    private int readCount = 1000;
+    private int readCount = 1;
 
     public MessageFetch(String storePath) {
         this.storePath = storePath;
