@@ -4,6 +4,7 @@ import io.openmessaging.BytesMessage;
 import io.openmessaging.KeyValue;
 import io.openmessaging.MessageHeader;
 
+import java.util.Queue;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -35,8 +36,13 @@ public class MappedWriter {
         }
     }
 
-    public synchronized void send(BytesMessage message) {
-        //todo remap
+    public synchronized void send(Queue<BytesMessage> messages) {
+        while(!messages.isEmpty()) {
+            send(messages.poll());
+        }
+    }
+
+    private void send(BytesMessage message) {
         if (MAX_MESSAGE_SIZE > buf.remaining()) {
             offset += buf.position();
             map(offset);
