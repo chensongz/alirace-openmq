@@ -22,7 +22,6 @@ public class MappedWriter {
     public MappedWriter(String filename) {
         try {
             fc = new RandomAccessFile(filename, "rw").getChannel();
-            System.out.println("filename: " + filename + "size: " + fc.size());
             offset = 0;
             map(offset);
         } catch (Exception e) {
