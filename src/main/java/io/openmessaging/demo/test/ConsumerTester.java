@@ -21,12 +21,14 @@ public class ConsumerTester {
 
     private static final AtomicLong COUNT = new AtomicLong(0);
     static Logger logger = LoggerFactory.getLogger(ConsumerTester.class);
+
     static class ConsumerTask extends Thread {
         String queue;
         List<String> topics;
         PullConsumer consumer;
         int pullNum;
         Map<String, Map<String, Integer>> offsets = new HashMap<>();
+
         public ConsumerTask(String queue, List<String> topics) {
             this.queue = queue;
             this.topics = topics;
@@ -50,10 +52,10 @@ public class ConsumerTester {
             }
             //init offsets
             offsets.put(queue, new HashMap<>());
-            for (String topic: topics) {
+            for (String topic : topics) {
                 offsets.put(topic, new HashMap<>());
             }
-            for (Map<String, Integer> map: offsets.values()) {
+            for (Map<String, Integer> map : offsets.values()) {
                 for (int i = 0; i < Constants.PRO_NUM; i++) {
                     map.put(Constants.PRO_PRE + i, 0);
                 }
@@ -63,58 +65,50 @@ public class ConsumerTester {
 
         @Override
         public void run() {
-
             while (true) {
-
                 try {
                     BytesMessage message = (BytesMessage) consumer.poll();
-                    System.out.println(this.toString() + ": " + message.toString());
                     if (message == null) {
+//                        System.out.println("message is null!! consumer exit!!");
                         break;
                     }
+//                    System.out.println(this.toString() + ": " + message.toString());
                     String queueOrTopic;
                     if (message.headers().getString(MessageHeader.QUEUE) != null) {
                         queueOrTopic = message.headers().getString(MessageHeader.QUEUE);
                     } else {
                         queueOrTopic = message.headers().getString(MessageHeader.TOPIC);
                     }
-
                     if (queueOrTopic == null || queueOrTopic.length() == 0) {
                         throw new Exception("Queue or Topic name is empty");
                     }
                     String body = new String(message.getBody());
-
                     int index = body.lastIndexOf("_");
                     String producer = body.substring(0, index);
                     int offset = Integer.parseInt(body.substring(index + 1));
-                    if(!message.headers().getString("MessageId").equals("asd")
-                            || !message.properties().getString("PRO_OFFSET").equals("PRODUCER7_3")){
+                    if (!message.headers().getString("MessageId").equals("hfgdfgasdf")
+                            || !message.properties().getString("PRO_OFFSET").equals("PRODUCER7_3")) {
                         System.out.println("header: " + message.headers().getString("MessageId") + "\nprop: " + message.properties().getString("PRO_OFFSET"));
                         System.err.println("验证出错");
 //                        System.exit(-1);
-                    }else{
-                        System.out.println("验证成功");
+                    } else {
+//                        System.out.println("验证成功");
                     }
-
 //                    if(COUNT.incrementAndGet() % 100000 == 0){
 //                    	System.out.println(COUNT.get());
 //                    }
 //                    System.out.println(Thread.currentThread().getName() +" " +queueOrTopic+" "+body);
 //                    System.out.println(Thread.currentThread().getName() +" " + offsets.get(queueOrTopic).get(producer));
-
-
                     if (offset != offsets.get(queueOrTopic).get(producer)) {
-                        logger.error("Mark Offset not equal expected:{} actual:{} producer:{} queueOrTopic:{}, thread : {}",
-                                offsets.get(queueOrTopic).get(producer), offset, producer, queueOrTopic,Thread.currentThread().getName() );
-
+                        System.err.printf("Mark Offset not equal expected:%s actual:%s producer:%s queueOrTopic:%s, thread : %s",
+                                offsets.get(queueOrTopic).get(producer), offset, producer, queueOrTopic, Thread.currentThread().getName());
                         break;
                     }
-
                     offsets.get(queueOrTopic).put(producer, offset + 1);
                     pullNum++;
-
                 } catch (Exception e) {
-                    logger.error("Error occurred in the consuming process", e);
+                    System.err.println("Error occurred in the consuming process!!");
+                    e.printStackTrace();
                     break;
                 }
             }
@@ -122,6 +116,10 @@ public class ConsumerTester {
 
         public int getPullNum() {
             return pullNum;
+        }
+
+        public List<String> getTopics() {
+            return topics;
         }
 
     }
@@ -138,36 +136,48 @@ public class ConsumerTester {
             String queue = Constants.QUEUE_PRE + i;
             List<String> topicLits = new ArrayList<>();
             Set<String> set = new HashSet<>();
-            for(int len = 0;len < Constants.TOPIC_NUM ;len++){
-                String topic  = Constants.TOPIC_PRE+random.nextInt(Constants.TOPIC_NUM);
-                System.out.println(ts.toString() + " start: " + topic);
-                while(set.contains(topic)){
-                    topic  = Constants.TOPIC_PRE+random.nextInt(Constants.TOPIC_NUM);
+            for (int len = 0; len < Constants.TOPIC_NUM; len++) {
+                String topic = Constants.TOPIC_PRE + random.nextInt(Constants.TOPIC_NUM);
+                if (!set.contains(topic)) {
+                    topicLits.add(topic);
                 }
                 set.add(topic);
-                System.out.println(ts.toString() + " end: " + topic);
-                topicLits.add(topic);
             }
 
             ts[i] = new ConsumerTask(queue, topicLits);
+            System.out.println("consumer " + i + " attach queue: " + queue + " topics: " + topicLits);
         }
 
         for (int i = 0; i < ts.length; i++) {
             ts[i].start();
         }
-        System.out.println("After start");
         for (int i = 0; i < ts.length; i++) {
             ts[i].join();
         }
         int pullNum = 0;
+        int shouldNum, actualNum;
+        int successNum = 0, errorNum = 0;
         for (int i = 0; i < ts.length; i++) {
-            pullNum += ((ConsumerTask)ts[i]).getPullNum();
-            System.out.println(pullNum);
+            actualNum = ((ConsumerTask) ts[i]).getPullNum();
+            shouldNum = (Constants.PRO_NUM * Constants.PRO_MAX / (Constants.QUEUE_NUM + Constants.TOPIC_NUM))
+                    * (((ConsumerTask) ts[i]).getTopics().size() + 1);
+            pullNum += actualNum;
+            System.out.println("consumer " + i
+                    + " should pullNum " + shouldNum
+                    + " actual pullNum " + actualNum
+                    + (shouldNum == actualNum ? " success!!" : " error!!"));
+            if (shouldNum == actualNum) {
+                successNum++;
+            } else {
+                errorNum++;
+            }
         }
         long end = System.currentTimeMillis();
         System.out.println("end................");
-        System.out.println(String.format("Mark Consumer Finished, Cost %d ms, pullNum %d", end - start, pullNum));
-        System.out.println(String.format("Cost %d q/ms", pullNum/(end - start)));
+        System.out.println("Consumer successNum: " + successNum + " errorNum: " + errorNum);
+        System.out.println("Consume " + (errorNum == 0 ? "Success!!" : "Error!!"));
+        System.out.println(String.format("Consumer Cost %d ms, total pullNum %d", end - start, pullNum));
+        System.out.println(String.format("Tps %d qps", pullNum / (end - start)));
         System.exit(0);
     }
 }

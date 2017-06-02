@@ -56,27 +56,22 @@ public class ProducerTester {
                     String queueOrTopic;
                     int index = sendNum % (Constants.TOPIC_NUM + Constants.QUEUE_NUM);
                     queueOrTopic = TOPICS.get(index);
-
 //                    System.out.println(label + "_" + offsets.get(queueOrTopic));
                     DefaultBytesMessage message;
                     if (index < Constants.QUEUE_NUM) {
                         message = (DefaultBytesMessage) producer.createBytesMessageToQueue(queueOrTopic, (label + "_" + offsets.get(queueOrTopic)).getBytes());
-
                     } else {
                         message = (DefaultBytesMessage) producer.createBytesMessageToTopic(queueOrTopic, (label + "_" + offsets.get(queueOrTopic)).getBytes());
 
                     }
-                    message.putHeaders("MessageId", "asd");
-
-                    message.putProperties("inject_jig", "sdd");
+                    message.putHeaders("MessageId", "hfgdfgasdf");
+                    message.putProperties("other_key", "uisfasdhf");
                     message.putProperties("PRO_OFFSET", "PRODUCER7_3");
 //                    message.putProperties("iect_4", "e3w3");
 //                    message.putProperties("iect_2", "x2y");
-
                     offsets.put(queueOrTopic, offsets.get(queueOrTopic) + 1);
                     producer.send(message);
                     sendNum++;
-
                     if (sendNum >= Constants.PRO_MAX) break;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -102,8 +97,8 @@ public class ProducerTester {
         }
         long end = System.currentTimeMillis();
         System.out.println("end................");
-        System.out.println(String.format("Mark Produce Finished, Cost %d ms, sendNum %d", end - start, Constants.PRO_MAX));
-        System.out.println(String.format("Cost %d q/ms", Constants.PRO_MAX / (end - start)));
+        System.out.println(String.format("Produce Finished, Cost %d ms, total sendNum %d", end - start, Constants.PRO_MAX * Constants.PRO_NUM));
+        System.out.println(String.format("Tps %d qps", Constants.PRO_MAX * Constants.PRO_NUM / (end - start)));
         System.exit(0);
     }
 }
