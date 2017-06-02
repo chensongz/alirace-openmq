@@ -4,6 +4,7 @@ import io.openmessaging.BytesMessage;
 import io.openmessaging.KeyValue;
 import io.openmessaging.MessageHeader;
 
+import javax.sound.midi.Soundbank;
 import java.util.Queue;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
@@ -21,6 +22,7 @@ public class MappedWriter {
     public MappedWriter(String filename) {
         try {
             fc = new RandomAccessFile(filename, "rw").getChannel();
+            System.out.println("filename: " + filename + "size: " + fc.size());
             offset = 0;
             map(offset);
         } catch (Exception e) {
@@ -36,13 +38,13 @@ public class MappedWriter {
         }
     }
 
-    public synchronized void send(Queue<BytesMessage> messages) {
-        while(!messages.isEmpty()) {
-            send(messages.poll());
-        }
-    }
+//    public synchronized void send(Queue<BytesMessage> messages) {
+//        while(!messages.isEmpty()) {
+//            send(messages.poll());
+//        }
+//    }
 
-    private void send(BytesMessage message) {
+    public synchronized void send(BytesMessage message) {
         if (MAX_MESSAGE_SIZE > buf.remaining()) {
             offset += buf.position();
             map(offset);
