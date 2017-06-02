@@ -27,7 +27,7 @@ public class MappedReader {
             fc = new RandomAccessFile(filename, "r").getChannel();
             map(0);
             //for test
-            System.out.printf("### file %s size: %d", filename, fc.size());
+//            System.out.printf("consume file %s size: %d", filename, fc.size());
         } catch (Exception e) {
             e.printStackTrace();
         }
