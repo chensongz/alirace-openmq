@@ -90,6 +90,7 @@ public class ConsumerTester {
                             || !message.properties().getString("PRO_OFFSET").equals("PRODUCER7_3")) {
                         System.out.println("header: " + message.headers().getString("MessageId") + "\nprop: " + message.properties().getString("PRO_OFFSET"));
                         System.err.println("验证出错");
+                        break;
 //                        System.exit(-1);
                     } else {
 //                        System.out.println("验证成功");

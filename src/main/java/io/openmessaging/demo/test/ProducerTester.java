@@ -90,7 +90,7 @@ public class ProducerTester {
             System.out.println("Remove old files...");
             for (String filename : filenames) {
                 System.out.println("filename: " + filename);
-                (new File(storePathDir + "/" + filename)).deleteOnExit();
+                (new File(storePathDir + "/" + filename)).delete();
             }
         }
 
