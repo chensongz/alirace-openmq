@@ -57,7 +57,6 @@ public class ProducerTester {
                     String queueOrTopic;
                     int index = sendNum % (Constants.TOPIC_NUM + Constants.QUEUE_NUM);
                     queueOrTopic = TOPICS.get(index);
-//                    System.out.println(label + "_" + offsets.get(queueOrTopic));
                     DefaultBytesMessage message;
                     if (index < Constants.QUEUE_NUM) {
                         message = (DefaultBytesMessage) producer.createBytesMessageToQueue(queueOrTopic, (label + "_" + offsets.get(queueOrTopic)).getBytes());
@@ -68,8 +67,6 @@ public class ProducerTester {
                     message.putHeaders("MessageId", "hfgdfgasdf");
                     message.putProperties("other_key", "uisfasdhf");
                     message.putProperties("PRO_OFFSET", "PRODUCER7_3");
-//                    message.putProperties("iect_4", "e3w3");
-//                    message.putProperties("iect_2", "x2y");
                     offsets.put(queueOrTopic, offsets.get(queueOrTopic) + 1);
                     producer.send(message);
                     sendNum++;
@@ -89,7 +86,7 @@ public class ProducerTester {
         if (filenames != null && filenames.length != 0) {
             System.out.println("Remove old files...");
             for (String filename : filenames) {
-                System.out.println("filename: " + filename);
+//                System.out.println("filename: " + filename);
                 (new File(storePathDir + "/" + filename)).delete();
             }
         }

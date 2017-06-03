@@ -149,7 +149,7 @@ public class ConsumerTester {
             }
 
             ts[i] = new ConsumerTask(queue, topicLits);
-            System.out.println("consumer " + i + " attach queue: " + queue + " topics: " + topicLits);
+//            System.out.println("consumer " + i + " attach queue: " + queue + " topics: " + topicLits);
         }
 
         for (int i = 0; i < ts.length; i++) {
