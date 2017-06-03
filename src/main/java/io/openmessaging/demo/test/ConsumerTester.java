@@ -141,6 +141,9 @@ public class ConsumerTester {
                 String topic = Constants.TOPIC_PRE + random.nextInt(Constants.TOPIC_NUM);
                 if (!set.contains(topic)) {
                     topicLits.add(topic);
+                    if (topicLits.size() >= Constants.CON_NUM - 1) {
+                        break;
+                    }
                 }
                 set.add(topic);
             }
