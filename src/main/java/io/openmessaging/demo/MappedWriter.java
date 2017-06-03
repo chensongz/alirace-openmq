@@ -55,7 +55,7 @@ public class MappedWriter {
         putHeaders(message.headers());
         buf.put(MessageFlag.FIELD_END);
         putProperties(message.properties());
-        buf.put(MessageFlag.MESSAGE_END);
+//        buf.put(MessageFlag.MESSAGE_END);
     }
 
     public void close() {

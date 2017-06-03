@@ -169,7 +169,11 @@ public class MappedReader {
 
     private void setProp(Message message) {
         byte curr;
-        while ((curr = buf.get()) != MessageFlag.MESSAGE_END) {
+//        while ((curr = buf.get()) != MessageFlag.MESSAGE_END) {
+        while ((curr = buf.get()) != MessageFlag.MESSAGE_START) {
+            if (curr == 0) {
+                break;
+            }
             switch (curr) {
                 case MessageFlag.PRO_OFFSET:
                     if (buf.get() == MessageFlag.PRODUCER_PREFIX) {
@@ -187,6 +191,7 @@ public class MappedReader {
                     break;
             }
         }
+        buf.position(buf.position() - 1);
         state = END;
     }
 
