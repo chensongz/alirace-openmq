@@ -25,7 +25,6 @@ public class ProducerTester {
         }
 
         public void init() {
-            //init producer
             try {
                 Class<?> kvClass = Class.forName("io.openmessaging.demo.DefaultKeyValue");
                 KeyValue keyValue = (KeyValue) kvClass.newInstance();
@@ -38,7 +37,6 @@ public class ProducerTester {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            //init offsets
             for (int i = 0; i < Constants.QUEUE_NUM; i++) {
                 offsets.put("QUEUE_" + i, 0);
                 TOPICS.add("QUEUE_" + i);
@@ -62,7 +60,6 @@ public class ProducerTester {
                         message = (DefaultBytesMessage) producer.createBytesMessageToQueue(queueOrTopic, (label + "_" + offsets.get(queueOrTopic)).getBytes());
                     } else {
                         message = (DefaultBytesMessage) producer.createBytesMessageToTopic(queueOrTopic, (label + "_" + offsets.get(queueOrTopic)).getBytes());
-
                     }
                     message.putHeaders("MessageId", "hfgdfgasdf");
                     message.putProperties("other_key", "uisfasdhf");
@@ -78,6 +75,10 @@ public class ProducerTester {
             }
             producer.flush();
         }
+
+        public int getSendNum() {
+            return sendNum;
+        }
     }
 
     public static void main(String[] args) throws Exception {
@@ -86,27 +87,45 @@ public class ProducerTester {
         if (filenames != null && filenames.length != 0) {
             System.out.println("Remove old files...");
             for (String filename : filenames) {
-//                System.out.println("filename: " + filename);
                 (new File(storePathDir + "/" + filename)).delete();
             }
         }
-
         System.out.println("start................");
         long start = System.currentTimeMillis();
         Thread[] ts = new Thread[Constants.PRO_NUM];
         for (int i = 0; i < ts.length; i++) {
             ts[i] = new ProducerTask(Constants.PRO_PRE + i);
         }
-        for (int i = 0; i < ts.length; i++) {
-            ts[i].start();
+        for (Thread t : ts) {
+            t.start();
         }
-        for (int i = 0; i < ts.length; i++) {
-            ts[i].join();
+        for (Thread t : ts) {
+            t.join();
         }
         long end = System.currentTimeMillis();
-        System.out.println("end................");
-        System.out.println(String.format("Produce Finished, Cost %d ms, total sendNum %d", end - start, Constants.PRO_MAX * Constants.PRO_NUM));
-        System.out.println(String.format("Tps %d qps", Constants.PRO_MAX * Constants.PRO_NUM / (end - start)));
+        System.out.println("end..................");
+
+        int sendNum = 0;
+        int shouldNum, actualNum;
+        int successNum = 0, errorNum = 0;
+        for (int i = 0; i < ts.length; i++) {
+            actualNum = ((ProducerTask) ts[i]).getSendNum();
+            shouldNum = Constants.PRO_MAX;
+            sendNum += actualNum;
+            System.out.println("producer " + i
+                    + " should sendNum " + shouldNum
+                    + " actual sendNum " + actualNum
+                    + (shouldNum == actualNum ? " success!!" : " error!!"));
+            if (shouldNum == actualNum) {
+                successNum++;
+            } else {
+                errorNum++;
+            }
+        }
+        System.out.println("Producer successNum: " + successNum + " errorNum: " + errorNum);
+        System.out.println("Producer " + (errorNum == 0 ? "Success!!" : "Error!!"));
+        System.out.println(String.format("Cost %d ms, total sendNum %d", end - start, sendNum));
+        System.out.println(String.format("Tps %d qps", sendNum / (end - start)));
         System.exit(0);
     }
 }
