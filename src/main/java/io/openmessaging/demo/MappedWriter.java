@@ -10,7 +10,7 @@ import java.nio.channels.FileChannel;
 
 public class MappedWriter {
 
-    private static final long SIZE = 25 * 1024 * 1024;
+    private static final long SIZE = 64 * 1024 * 1024;
     private static final long MAX_MESSAGE_SIZE = 256 * 1024;
 
     private FileChannel fc;
