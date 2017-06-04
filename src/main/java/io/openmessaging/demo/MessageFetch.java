@@ -15,7 +15,7 @@ public class MessageFetch {
     }
 
     public void attachQueue(String queueName, Collection<String> topics) {
-        currentReader = new MappedReader(storePath + "/" + queueName);
+        currentReader = new MappedReader(storePath, queueName);
         nonConsumeFiles.addAll(topics);
     }
 
@@ -25,7 +25,7 @@ public class MessageFetch {
         if (message == null) {
             String nonConsumeFileName = nonConsumeFiles.poll();
             if (nonConsumeFileName != null) {
-                currentReader = new MappedReader(storePath + "/" + nonConsumeFileName);
+                currentReader = new MappedReader(storePath, nonConsumeFileName);
                 return currentReader.poll();
             }
         }

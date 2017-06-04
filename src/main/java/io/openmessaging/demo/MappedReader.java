@@ -26,10 +26,10 @@ public class MappedReader {
     private StringBuilder stringBuilder = new StringBuilder();
     private int state;
 
-    public MappedReader(String filename) {
+    public MappedReader(String storePath, String filename) {
         this.filename = filename;
         try {
-            fc = new RandomAccessFile(filename, "r").getChannel();
+            fc = new RandomAccessFile(storePath + "/" + filename, "r").getChannel();
             map(0);
             bao = new ByteArrayOutputStream();
         } catch (Exception e) {
@@ -93,7 +93,6 @@ public class MappedReader {
             message.putHeaders(MessageHeader.TOPIC, filename);
         } else {
             message.putHeaders(MessageHeader.QUEUE, filename);
-
         }
         message.putHeaders(MessageHeader.MESSAGE_ID, readString(MessageFlag.FIELD_END));
         state = PROP;
@@ -192,9 +191,12 @@ public class MappedReader {
             if (curr == 0) {
                 break;
             }
+            buf.position(buf.position() - 1);
             String key = readString(MessageFlag.KEY_END);
-            message.putProperties(key, readString(MessageFlag.VALUE_END, MessageFlag.MESSAGE_START));
+            String value = readString(MessageFlag.VALUE_END, MessageFlag.MESSAGE_START);
+            message.putProperties(key, value);
         }
+        buf.position(buf.position() - 1);
         state = END;
     }
 
@@ -243,10 +245,11 @@ public class MappedReader {
     }
 
     private String readString(byte end1, byte end2) {
-        byte t;
+        byte t = buf.get();
         bao.reset();
-        while ((t = buf.get()) != end1 && t != end2) {
+        while (t != end1 && t != end2 && t != 0) {
             bao.write(t);
+            t = buf.get();
         }
         if (t == MessageFlag.MESSAGE_START) {
             buf.position(buf.position() - 1);
