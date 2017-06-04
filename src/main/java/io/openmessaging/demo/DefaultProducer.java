@@ -2,13 +2,10 @@ package io.openmessaging.demo;
 
 import io.openmessaging.*;
 
-import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Queue;
 
 public class DefaultProducer implements Producer {
-    private final int QUEUE_MAX =  1000;
 
     private MessageFactory messageFactory = new DefaultMessageFactory();
 
@@ -16,7 +13,6 @@ public class DefaultProducer implements Producer {
 
     private String storePath;
     private Map<String, MappedWriter> bufferHashMap = new HashMap<>(1024);
-    private Map<String, Queue<BytesMessage>> queueMap = new HashMap<>(1024);
     private MessageStore messageStore = MessageStore.getInstance();
 
 
@@ -62,36 +58,12 @@ public class DefaultProducer implements Producer {
         String bucket = topic != null ? topic : queue;
 
         MappedWriter mw;
-//        Queue<BytesMessage> q;
-
-//        if(!bufferHashMap.containsKey(bucket)) {
-//            mw = new MappedWriter(storePath + "/" + bucket + "_" + this.toString().split("@")[1]);
-//            bufferHashMap.put(bucket, mw);
-//        }else{
-//            mw = bufferHashMap.get(bucket);
-//        }
-
         if (!bufferHashMap.containsKey(bucket)) {
             mw = messageStore.getMappedWriter(storePath, bucket);
             bufferHashMap.put(bucket, mw);
         } else {
             mw = bufferHashMap.get(bucket);
         }
-
-//        if (!bufferHashMap.containsKey(bucket)) {
-//            mw = messageStore.getMappedWriter(storePath, bucket);
-//            q = new LinkedList<>();
-//            bufferHashMap.put(bucket, mw);
-//            queueMap.put(bucket, q);
-//        } else {
-//            mw = bufferHashMap.get(bucket);
-//            q = queueMap.get(bucket);
-//        }
-//        q.add((BytesMessage) message);
-//        if(q.size() >= QUEUE_MAX) {
-//            mw.send(q);
-//            q.clear();
-//        }
         mw.send((BytesMessage) message);
     }
 
@@ -132,14 +104,5 @@ public class DefaultProducer implements Producer {
 
     @Override
     public void flush() {
-//        //TODO
-//        MappedWriter mw;
-//        Queue<BytesMessage> q;
-//        for(String bucket: bufferHashMap.keySet()) {
-//            mw = bufferHashMap.get(bucket);
-//            q = queueMap.get(bucket);
-//            mw.send(q);
-//            q.clear();
-//        }
     }
 }

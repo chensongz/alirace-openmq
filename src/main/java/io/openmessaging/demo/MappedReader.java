@@ -3,6 +3,7 @@ package io.openmessaging.demo;
 import io.openmessaging.Message;
 import io.openmessaging.MessageHeader;
 
+import java.io.ByteArrayOutputStream;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -20,14 +21,14 @@ public class MappedReader {
     private FileChannel fc;
     private MappedByteBuffer buf;
 
+    private ByteArrayOutputStream bao;
     private int state;
 
     public MappedReader(String filename) {
         try {
             fc = new RandomAccessFile(filename, "r").getChannel();
             map(0);
-            //for test
-//            System.out.printf("consume file %s size: %d", filename, fc.size());
+            bao = new ByteArrayOutputStream();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,16 +77,12 @@ public class MappedReader {
 
     private Message setBody() {
         byte curr;
-        List<Byte> bodyArray = new ArrayList<>();
+        bao.reset();
         while ((curr = buf.get()) != MessageFlag.FIELD_END) {
-            bodyArray.add(curr);
+            bao.write(curr);
         }
         state = HEAD;
-        byte[] body = new byte[bodyArray.size()];
-        for (int i = 0; i < bodyArray.size(); i++) {
-            body[i] = bodyArray.get(i);
-        }
-        return new DefaultBytesMessage(body);
+        return new DefaultBytesMessage(bao.toByteArray());
     }
 
     private void setHead(Message message) {
@@ -169,7 +166,6 @@ public class MappedReader {
 
     private void setProp(Message message) {
         byte curr;
-//        while ((curr = buf.get()) != MessageFlag.MESSAGE_END) {
         while ((curr = buf.get()) != MessageFlag.MESSAGE_START) {
             if (curr == 0) {
                 break;
@@ -197,15 +193,11 @@ public class MappedReader {
 
     private String readString(byte end) {
         byte t;
-        List<Byte> v = new ArrayList<>();
+        bao.reset();
         while ((t = buf.get()) != end) {
-            v.add(t);
+            bao.write(t);
         }
-        byte[] value = new byte[v.size()];
-        for (int i = 0; i < v.size(); i++) {
-            value[i] = v.get(i);
-        }
-        return new String(value);
+        return bao.toString();
     }
 
     private void setStringHead(String key, Message message) {

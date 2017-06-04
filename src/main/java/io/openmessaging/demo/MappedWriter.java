@@ -37,12 +37,6 @@ public class MappedWriter {
         }
     }
 
-//    public synchronized void send(Queue<BytesMessage> messages) {
-//        while(!messages.isEmpty()) {
-//            send(messages.poll());
-//        }
-//    }
-
     public synchronized void send(BytesMessage message) {
         if (MAX_MESSAGE_SIZE > buf.remaining()) {
             offset += buf.position();
@@ -55,7 +49,6 @@ public class MappedWriter {
         putHeaders(message.headers());
         buf.put(MessageFlag.FIELD_END);
         putProperties(message.properties());
-//        buf.put(MessageFlag.MESSAGE_END);
     }
 
     public void close() {
