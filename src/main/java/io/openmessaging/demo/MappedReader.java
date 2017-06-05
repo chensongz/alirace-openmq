@@ -3,6 +3,7 @@ package io.openmessaging.demo;
 import io.openmessaging.Message;
 import io.openmessaging.MessageHeader;
 
+import java.io.ByteArrayOutputStream;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -19,15 +20,18 @@ public class MappedReader {
 
     private FileChannel fc;
     private MappedByteBuffer buf;
+    private String filename;
 
+    private ByteArrayOutputStream bao;
+    private StringBuilder stringBuilder = new StringBuilder();
     private int state;
 
-    public MappedReader(String filename) {
+    public MappedReader(String storePath, String filename) {
+        this.filename = filename;
         try {
-            fc = new RandomAccessFile(filename, "r").getChannel();
+            fc = new RandomAccessFile(storePath + "/" + filename, "r").getChannel();
             map(0);
-            //for test
-//            System.out.printf("consume file %s size: %d", filename, fc.size());
+            bao = new ByteArrayOutputStream();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,19 +80,25 @@ public class MappedReader {
 
     private Message setBody() {
         byte curr;
-        List<Byte> bodyArray = new ArrayList<>();
+        bao.reset();
         while ((curr = buf.get()) != MessageFlag.FIELD_END) {
-            bodyArray.add(curr);
+            bao.write(curr);
         }
         state = HEAD;
-        byte[] body = new byte[bodyArray.size()];
-        for (int i = 0; i < bodyArray.size(); i++) {
-            body[i] = bodyArray.get(i);
-        }
-        return new DefaultBytesMessage(body);
+        return new DefaultBytesMessage(bao.toByteArray());
     }
 
     private void setHead(Message message) {
+        if (filename.startsWith("T")) {
+            message.putHeaders(MessageHeader.TOPIC, filename);
+        } else {
+            message.putHeaders(MessageHeader.QUEUE, filename);
+        }
+        message.putHeaders(MessageHeader.MESSAGE_ID, readString(MessageFlag.FIELD_END));
+        state = PROP;
+    }
+
+    private void setHead2(Message message) {
         byte curr;
         while ((curr = buf.get()) != MessageFlag.FIELD_END) {
             switch (curr) {
@@ -168,8 +178,42 @@ public class MappedReader {
     }
 
     private void setProp(Message message) {
+        stringBuilder.setLength(0);
+        stringBuilder.append(MessageFlag.PRODUCER_STR_PREFIX)
+                .append(buf.get() & 0xff)
+                .append('_');
+        byte[] offset = new byte[3];
+        buf.get(offset, 0, 3);
+        stringBuilder.append(bytes2String(offset));
+        message.putProperties(MessageFlag.PRO_OFFSET_KEY, stringBuilder.toString());
         byte curr;
-        while ((curr = buf.get()) != MessageFlag.MESSAGE_END) {
+        while ((curr = buf.get()) != MessageFlag.MESSAGE_START) {
+            if (curr == 0) {
+                break;
+            }
+            buf.position(buf.position() - 1);
+            String key = readString(MessageFlag.KEY_END);
+            String value = readString(MessageFlag.VALUE_END, MessageFlag.MESSAGE_START);
+            message.putProperties(key, value);
+        }
+        buf.position(buf.position() - 1);
+        state = END;
+    }
+
+    private String bytes2String(byte[] b) {
+        int num = 0;
+        num += b[2] & 0xff;
+        num += (b[1] & 0xff) << 8;
+        num += (b[0] & 0xff) << 16;
+        return String.valueOf(num);
+    }
+
+    private void setProp2(Message message) {
+        byte curr;
+        while ((curr = buf.get()) != MessageFlag.MESSAGE_START) {
+            if (curr == 0) {
+                break;
+            }
             switch (curr) {
                 case MessageFlag.PRO_OFFSET:
                     if (buf.get() == MessageFlag.PRODUCER_PREFIX) {
@@ -187,20 +231,30 @@ public class MappedReader {
                     break;
             }
         }
+        buf.position(buf.position() - 1);
         state = END;
     }
 
     private String readString(byte end) {
         byte t;
-        List<Byte> v = new ArrayList<>();
+        bao.reset();
         while ((t = buf.get()) != end) {
-            v.add(t);
+            bao.write(t);
         }
-        byte[] value = new byte[v.size()];
-        for (int i = 0; i < v.size(); i++) {
-            value[i] = v.get(i);
+        return bao.toString();
+    }
+
+    private String readString(byte end1, byte end2) {
+        byte t = buf.get();
+        bao.reset();
+        while (t != end1 && t != end2 && t != 0) {
+            bao.write(t);
+            t = buf.get();
         }
-        return new String(value);
+        if (t == MessageFlag.MESSAGE_START) {
+            buf.position(buf.position() - 1);
+        }
+        return bao.toString();
     }
 
     private void setStringHead(String key, Message message) {

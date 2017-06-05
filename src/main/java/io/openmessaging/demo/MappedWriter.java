@@ -4,15 +4,13 @@ import io.openmessaging.BytesMessage;
 import io.openmessaging.KeyValue;
 import io.openmessaging.MessageHeader;
 
-import javax.sound.midi.Soundbank;
-import java.util.Queue;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
 public class MappedWriter {
 
-    private static final long SIZE = 32 * 1024 * 1024;
+    private static final long SIZE = 28 * 1024 * 1024;
     private static final long MAX_MESSAGE_SIZE = 256 * 1024;
 
     private FileChannel fc;
@@ -37,12 +35,6 @@ public class MappedWriter {
         }
     }
 
-//    public synchronized void send(Queue<BytesMessage> messages) {
-//        while(!messages.isEmpty()) {
-//            send(messages.poll());
-//        }
-//    }
-
     public synchronized void send(BytesMessage message) {
         if (MAX_MESSAGE_SIZE > buf.remaining()) {
             offset += buf.position();
@@ -55,7 +47,6 @@ public class MappedWriter {
         putHeaders(message.headers());
         buf.put(MessageFlag.FIELD_END);
         putProperties(message.properties());
-        buf.put(MessageFlag.MESSAGE_END);
     }
 
     public void close() {
@@ -71,6 +62,40 @@ public class MappedWriter {
     }
 
     private void putHeaders(KeyValue headers) {
+        buf.put(headers.getString(MessageHeader.MESSAGE_ID).getBytes());
+    }
+
+    private void putProperties(KeyValue properties) {
+        String producerValue = properties.getString(MessageFlag.PRO_OFFSET_KEY);
+        String[] str = producerValue.substring(8).split("_", 2);
+        buf.put(Byte.parseByte(str[0]));
+        buf.put(stringNum2Bytes(str[1]));
+        int size = properties.keySet().size();
+        int i = 0;
+        for (String key : properties.keySet()) {
+            i++;
+            if (!key.equals(MessageFlag.PRO_OFFSET_KEY)) {
+                buf.put(key.getBytes());
+                buf.put(MessageFlag.KEY_END);
+                buf.put(properties.getString(key).getBytes());
+                if (i < size) {
+                    buf.put(MessageFlag.VALUE_END);
+                }
+            }
+        }
+    }
+
+    private byte[] stringNum2Bytes(String s) {
+        int num = Integer.parseInt(s);
+        byte[] ret = new byte[3];
+        ret[0] = (byte) ((num & 0xff0000) >>> 16);
+        ret[1] = (byte) ((num & 0xff00) >>> 8);
+        ret[2] = (byte) ((num & 0xff));
+        return ret;
+    }
+
+
+    private void putHeaders2(KeyValue headers) {
         for (String key : headers.keySet()) {
             String value = headers.getString(key);
             switch (key) {
@@ -171,7 +196,7 @@ public class MappedWriter {
         }
     }
 
-    private void putProperties(KeyValue properties) {
+    private void putProperties2(KeyValue properties) {
         for (String key : properties.keySet()) {
             switch (key) {
                 case "PRO_OFFSET":
