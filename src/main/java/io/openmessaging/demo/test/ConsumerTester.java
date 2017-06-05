@@ -36,6 +36,7 @@ public class ConsumerTester {
         }
 
         public void init() {
+            //init consumer
             try {
                 Class<?> kvClass = Class.forName("io.openmessaging.demo.DefaultKeyValue");
                 KeyValue keyValue = (KeyValue) kvClass.newInstance();
@@ -49,6 +50,7 @@ public class ConsumerTester {
             } catch (Exception e) {
                 logger.error("please check the package name and class name:", e);
             }
+            //init offsets
             offsets.put(queue, new HashMap<>());
             for (String topic : topics) {
                 offsets.put(topic, new HashMap<>());
@@ -58,6 +60,7 @@ public class ConsumerTester {
                     map.put(Constants.PRO_PRE + i, 0);
                 }
             }
+
         }
 
         @Override
@@ -123,8 +126,10 @@ public class ConsumerTester {
     }
 
     public static void main(String[] args) throws Exception {
+//    	 BasicConfigurator.configure();// 自动快速地使用缺省Log4j环境。
         System.out.println("start................");
         long start = System.currentTimeMillis();
+
         Random random = new Random();
         Thread[] ts = new Thread[Constants.CON_NUM];
         System.out.println("consumer_num: " + ts.length);
@@ -142,18 +147,17 @@ public class ConsumerTester {
                 }
                 set.add(topic);
             }
+
             ts[i] = new ConsumerTask(queue, topicLits);
 //            System.out.println("consumer " + i + " attach queue: " + queue + " topics: " + topicLits);
         }
-        for (Thread t : ts) {
-            t.start();
-        }
-        for (Thread t : ts) {
-            t.join();
-        }
-        long end = System.currentTimeMillis();
-        System.out.println("end..................");
 
+        for (int i = 0; i < ts.length; i++) {
+            ts[i].start();
+        }
+        for (int i = 0; i < ts.length; i++) {
+            ts[i].join();
+        }
         int pullNum = 0;
         int shouldNum, actualNum;
         int successNum = 0, errorNum = 0;
@@ -172,6 +176,8 @@ public class ConsumerTester {
                 errorNum++;
             }
         }
+        long end = System.currentTimeMillis();
+        System.out.println("end................");
         System.out.println("Consumer successNum: " + successNum + " errorNum: " + errorNum);
         System.out.println("Consume " + (errorNum == 0 ? "Success!!" : "Error!!"));
         System.out.println(String.format("Consumer Cost %d ms, total pullNum %d", end - start, pullNum));
